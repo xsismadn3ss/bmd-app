@@ -1,5 +1,7 @@
+import { FadeIn } from "@/components/animation/fade-in";
 import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
+import { Container } from "@/components/container";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/native";
@@ -9,11 +11,12 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  View,
+  View
 } from "react-native";
 
 export default function AuthHomeScreen(): React.JSX.Element {
   const { colors } = useTheme();
+
   const backgroundColor = useThemeColor(
     { light: undefined, dark: undefined },
     "background"
@@ -32,7 +35,7 @@ export default function AuthHomeScreen(): React.JSX.Element {
       >
         <View style={styles.container}>
           {/* Formularios de login y register */}
-          <View style={styles.card}>
+          <Container>
             <View style={[styles.selector, { borderColor: colors.border }]}>
               <SegmentedControl
                 values={["Iniciar sesión", "Registrarse"]}
@@ -46,9 +49,17 @@ export default function AuthHomeScreen(): React.JSX.Element {
                 activeFontStyle={{ color: "#fff" }}
               />
             </View>
-            {selectedIndex === 0 && <LoginForm />}
-            {selectedIndex === 1 && <RegisterForm />}
-          </View>
+            {selectedIndex === 0 && (
+              <FadeIn duration={300}>
+                <LoginForm />
+              </FadeIn>
+            )}
+            {selectedIndex === 1 && (
+              <FadeIn duration={300}>
+                <RegisterForm />
+              </FadeIn>
+            )}
+          </Container>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -61,11 +72,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     flex: 1,
     justifyContent: "center",
-  },
-  card: {
-    width: "100%",
-    padding: 10,
-    gap: 30,
+    alignItems: "center",
   },
   selector: {
     borderWidth: 1,
