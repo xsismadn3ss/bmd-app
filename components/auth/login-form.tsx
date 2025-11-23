@@ -17,6 +17,7 @@ interface LoginFormState {
 
 export default function LoginForm() {
   const { colors } = useTheme();
+  const placeholderColor = "#686868ff";
   const [form, setForm] = useState<LoginFormState>({
     email: "",
     password: "",
@@ -54,6 +55,7 @@ export default function LoginForm() {
             { borderColor: colors.border, color: colors.text },
           ]}
           placeholder="satoshi@nakamoto.com"
+          placeholderTextColor={placeholderColor}
           keyboardType="email-address"
           autoCapitalize="none"
           value={form.email}
@@ -69,6 +71,7 @@ export default function LoginForm() {
             { borderColor: colors.border, color: colors.text },
           ]}
           placeholder="ingresa tu contraseña"
+          placeholderTextColor={placeholderColor}
           secureTextEntry
           value={form.password}
           onChangeText={(text) => handleChange("password", text)}
@@ -102,6 +105,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#e28700ff",
     alignItems: "center",
     borderRadius: 10,
-    marginTop: 15
+    marginTop: 15,
   },
 });
