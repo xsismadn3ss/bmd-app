@@ -32,7 +32,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingBlock: 20,
     flex: 1,
     alignItems: 'center'
   },
