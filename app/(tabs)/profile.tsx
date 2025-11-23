@@ -1,3 +1,4 @@
+import { Container } from "@/components/container";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -9,18 +10,22 @@ export default function ProfileScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView darkColor={cardDark} style={styles.card}>
-        <View style={styles.cardHeader}>
-          <ThemedText style={styles.nameText}>Sathosi Nakamoto</ThemedText>
+      <Container maxWidth={700}>
+        <ThemedView darkColor={cardDark} style={styles.card}>
+          <View style={styles.cardHeader}>
+            <ThemedText style={styles.nameText}>Sathosi Nakamoto</ThemedText>
 
-          <Link href={"/settings"}>
-            <ThemedText lightColor="#494949ff" darkColor="#515151ff">
-              <MaterialIcons name={"settings"} size={21} />
-            </ThemedText>
-          </Link>
-        </View>
-        <ThemedText style={styles.emailText}>satoshi@example.email</ThemedText>
-      </ThemedView>
+            <Link href={"/settings"}>
+              <ThemedText lightColor="#494949ff" darkColor="#515151ff">
+                <MaterialIcons name={"settings"} size={21} />
+              </ThemedText>
+            </Link>
+          </View>
+          <ThemedText style={styles.emailText}>
+            satoshi@example.email
+          </ThemedText>
+        </ThemedView>
+      </Container>
     </ThemedView>
   );
 }
@@ -29,6 +34,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     flex: 1,
+    alignItems: 'center'
   },
   card: {
     borderRadius: 10,
