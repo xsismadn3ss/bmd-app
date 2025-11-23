@@ -8,13 +8,18 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-interface FadeInProps {
+export interface FadeInProps {
+  /**duración de la animación */
   duration?: number;
+  /**retardo de la animación */
   delay?: number;
+  /**Componentes hijos */
   children: React.ReactNode;
+  /**estilos: extender estilos base */
   style?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>;
 }
 
+/**Contenedor con animación FadeIn */
 export function FadeIn({
   duration = 1000,
   delay = 0,
