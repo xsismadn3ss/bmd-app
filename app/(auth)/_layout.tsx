@@ -9,7 +9,7 @@ export default function Layout(): React.JSX.Element {
   return (
     <>
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="sign-in-up" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
     </>
