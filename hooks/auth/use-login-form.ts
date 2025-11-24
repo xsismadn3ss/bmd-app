@@ -1,4 +1,6 @@
+import { login } from "@/api/auth";
 import { isEmojiSafe, validateEmailFormat } from "@/utils/text";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -37,8 +39,8 @@ export function useLoginForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (name: keyof LoginFormState, value: string) => {
-    setForm((prevform) => ({
-      ...prevform,
+    setForm((prev) => ({
+      ...prev,
       [name]: value,
     })); // Limpiar el error del campo al escribir
 
@@ -65,17 +67,17 @@ export function useLoginForm() {
       JSON.stringify(initialErrors)
     );
 
-    const emailTrimed = currentForm.email.trim();
-    const passwordTrimed = currentForm.password.trim(); // Validación 1: Campos vacíos
+    const emailTrimmed = currentForm.email.trim();
+    const passwordTrimmed = currentForm.password.trim(); // Validación 1: Campos vacíos
 
-    if (!emailTrimed) {
+    if (!emailTrimmed) {
       newErrors.email = {
         value: "El campo email es requerido",
         border: errorBorder,
       };
       isValid = false;
     }
-    if (!passwordTrimed) {
+    if (!passwordTrimmed) {
       newErrors.password = {
         value: "El campo de contraseña es requerido",
         border: errorBorder,
@@ -83,7 +85,7 @@ export function useLoginForm() {
       isValid = false;
     } // Validación 2: Caracteres no permitidos (emojis)
 
-    if (emailTrimed && !isEmojiSafe(emailTrimed)) {
+    if (emailTrimmed && !isEmojiSafe(form.email)) {
       newErrors.email = {
         value: "El email contiene caracteres no permitidos",
         border: errorBorder,
@@ -91,7 +93,7 @@ export function useLoginForm() {
       isValid = false;
     }
 
-    if (passwordTrimed && !isEmojiSafe(passwordTrimed)) {
+    if (passwordTrimmed && !isEmojiSafe(form.password)) {
       newErrors.password = {
         value: "La contraseña contiene caracteres no permitidos",
         border: errorBorder,
@@ -99,12 +101,8 @@ export function useLoginForm() {
       isValid = false;
     }
 
-    // Validación 3: Formato de email (solo si pasó la validación de emojis/vacío)
-    if (
-      emailTrimed &&
-      isEmojiSafe(emailTrimed) &&
-      !validateEmailFormat(emailTrimed)
-    ) {
+    // Validación 3: Validar formato de correo electrónico
+    if (emailTrimmed && !validateEmailFormat(form.email)) {
       newErrors.email = {
         value: "Formato de email inválido",
         border: errorBorder,
@@ -119,24 +117,39 @@ export function useLoginForm() {
   const handleLogin = async () => {
     resetStyles();
     if (!validateForm(form)) return;
-
     setIsLoading(true);
-    try {
-      // TODO: Aquí se agregaría la llamada a la API
-      console.log("Intentando iniciar sesión con:", form.email);
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulación de API // Éxito en el login
-
-      resetForm();
-      router.replace("/(tabs)");
-    } catch (error) {
-      console.error("Error de Login:", error); // Ejemplo: Mostrar un error genérico si falla la autenticación
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        email: { value: "Email o contraseña incorrectos", border: errorBorder },
-      }));
-    } finally {
-      setIsLoading(false);
-    }
+    await login(form)
+      .then(async (response) => {
+        const data = response.data;
+        await AsyncStorage.setItem("USER", data.name);
+        await AsyncStorage.setItem("AUTH_TOKEN", data.token);
+        router.replace("/(tabs)");
+      })
+      .catch((error) => {
+        if (error.message == "Network Error") {
+          setErrors((prev) => ({
+            ...prev,
+            password: {
+              value: "No hay conexión a internet, no se pudo iniciar sesion",
+              border: colors.border,
+            },
+          }));
+          return;
+        }
+        let key = "email";
+        if(error?.status == 404) key = "email";
+        else key = 'password'
+        setErrors((prev) => ({
+          ...prev,
+          [key]: {
+            value: error.response.data.message,
+            border: errorBorder,
+          },
+        }));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return {

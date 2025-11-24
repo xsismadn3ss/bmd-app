@@ -1,8 +1,10 @@
+import { register } from "@/api/auth";
 import {
   isEmojiSafe,
   validateEmailFormat,
   validatePasswordSecurity,
 } from "@/utils/text";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -192,25 +194,47 @@ export function useRegistrationForm() {
     resetStyles(); // Limpiar estilos previos (útil antes de validar)
     const formIsValid = validateForm(form);
 
-    if (!formIsValid) {
-      // No hacemos nada, los errores ya están seteados.
-      return;
-    }
+    if (!formIsValid) return;
 
     setIsLoading(true);
-    try {
-      // TODO: realizar llamada a API de registro
-      console.log("Registrando usuario:", form.email);
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulación de API
 
-      // Éxito
-      router.replace("/(tabs)");
-    } catch (error) {
-      console.error("Error en registro:", error);
-      // Mostrar mensaje de error al usuario (ej. email ya existe)
-    } finally {
-      setIsLoading(false);
-    }
+    await register({
+      name: form.name,
+      email: form.email,
+      password: form.password,
+    })
+      .then(async (response) => {
+        const data = response.data;
+        await AsyncStorage.setItem("USER", data.name);
+        await AsyncStorage.setItem("AUTH_TOKEN", data.token);
+        router.replace("/(tabs)");
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.message == "Net") {
+          setErrors((prev) => ({
+            ...prev,
+            confirmPassword: {
+              value: "No hay conexión a internet, se pudo crear la cuenta",
+              border: colors.border,
+            },
+          }));
+          return;
+        }
+        let key = "email";
+        if (error?.status == 409) key = "email";
+        else key = "confirmPassword";
+        setErrors((prev) => ({
+          ...prev,
+          [key]: {
+            value: error.response.data.message,
+            border: errorBorder,
+          },
+        }));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return {
