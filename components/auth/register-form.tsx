@@ -5,14 +5,14 @@ import {
   validatePasswordSecurity,
 } from "@/utils/text";
 import { useTheme } from "@react-navigation/native";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SlideIn } from "../animation/slide-in";
 import { PasswordInput } from "../forms/input";
@@ -76,6 +76,15 @@ export default function RegisterForm() {
 
   const resetStyles = () => {
     setErrors(INITIAL_ERRORS);
+  };
+
+  const resetForm = () => {
+    setForm({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
   };
 
   const validateForm = () => {
@@ -223,7 +232,9 @@ export default function RegisterForm() {
     resetStyles();
     const formIsValid = validateForm();
     if (!formIsValid) return;
-    Alert.alert("Registro exitoso", "Tu cuenta ha sido creada exitosamente");
+    resetForm();
+    // TODO: realizar llamada a API
+    router.replace('/(tabs)')
   };
 
   return (
