@@ -4,8 +4,8 @@
  * @returns verdadero o falso si el texto no tiene emojis
  */
 export function isEmojiSafe(text: string): boolean {
-  const emojiRegex = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u;
-  return emojiRegex.test(text);
+  const emojiRegex = /(\p{Emoji_Presentation}|\p{Extended_Pictographic}|\uFE0F)/u;
+  return !emojiRegex.test(text);
 }
 
 /**
@@ -26,7 +26,7 @@ export function isWeirdCharSafe(text: string): boolean {
  * @param email correo electronico
  * @returns verdadero o falso si el email tiene formato correcto
  */
-export function validateEmalFormat(email: string): boolean {
+export function validateEmailFormat(email: string): boolean {
   const emailRegex = new RegExp(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
@@ -61,7 +61,7 @@ export interface PasswordValidationResult {
   failedRequirements: PasswordRequirement[];
 }
 
-const MIN_LENGTH = 12;
+const MIN_LENGTH = 8;
 
 export function validatePasswordSecurity(
   password: string
