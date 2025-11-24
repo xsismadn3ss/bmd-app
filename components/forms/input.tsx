@@ -6,16 +6,16 @@ import {
   StyleProp,
   StyleSheet,
   TextInput,
+  TextStyle,
   TouchableOpacity,
   View,
-  ViewStyle,
 } from "react-native";
 
 const PLACEHOLDER_COLOR = "#686868ff";
 
 interface PasswordInputProps {
   value?: string;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<TextStyle>;
   placeholder?: string;
   secureTextEntry: boolean;
   onChangeText?: (text: string) => void;
@@ -34,17 +34,15 @@ export function PasswordInput(props: PasswordInputProps) {
   const iconName = isSecure ? "eye" : "eye-with-line";
 
   return (
-    <View style={[props.style, styles.input, { backgroundColor }]}>
+    <View style={styles.container}>
       <TextInput
         style={[
           {
             color: colors.text,
             backgroundColor,
-            flex: 1,
-            height: "100%",
-            paddingVertical: 8,
           },
-          styles.textInputBase,
+          styles.input,
+          props.style,
         ]}
         placeholder={props.placeholder}
         placeholderTextColor={PLACEHOLDER_COLOR}
@@ -60,7 +58,7 @@ export function PasswordInput(props: PasswordInputProps) {
           name={iconName as any}
           color={colors.text}
           size={20}
-          style={{ opacity: 0.8 }}
+          style={styles.icon}
         />
       </TouchableOpacity>
     </View>
@@ -68,21 +66,30 @@ export function PasswordInput(props: PasswordInputProps) {
 }
 
 const styles = StyleSheet.create({
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
+  container: {
     width: "100%",
-    padding: 2,
-    paddingInline: 12,
     flexDirection: "row",
     alignItems: "center",
   },
-  textInputBase: {
-    fontSize: 16,
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
     fontWeight: "200",
+    width: "100%",
   },
   iconContainer: {
     paddingLeft: 10,
     justifyContent: "center",
+    position: "absolute",
+    right: 10,
+  },
+  icon: {
+    opacity: 0.8,
+    textShadowOffset: {
+      width: 0,
+      height: 1
+    },
+    textShadowRadius: 4
   },
 });
