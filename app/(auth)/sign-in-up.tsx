@@ -4,7 +4,6 @@ import RegisterForm from "@/components/auth/register-form";
 import { Container } from "@/components/container";
 import { ThemedText } from "@/components/themed-text";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/native";
 import React, { useState } from "react";
@@ -18,16 +17,11 @@ import {
 
 export default function AuthHomeScreen(): React.JSX.Element {
   const { colors } = useTheme();
-
-  const backgroundColor = useThemeColor(
-    { light: undefined, dark: undefined },
-    "background"
-  );
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor }}
+      style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
@@ -45,17 +39,17 @@ export default function AuthHomeScreen(): React.JSX.Element {
           {/* Formularios de login y register */}
           <Container>
             <View style={[styles.selector, { borderColor: colors.border }]}>
-            <SegmentedControl
-              values={["Iniciar sesión", "Registrarse"]}
-              selectedIndex={selectedIndex}
-              onChange={(event) => {
-                setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
-              }}
-              backgroundColor={colors.card}
-              tintColor="#e28700ff"
-              fontStyle={{ color: colors.text }}
-              activeFontStyle={{ color: "#fff" }}
-            />
+              <SegmentedControl
+                values={["Iniciar sesión", "Registrarse"]}
+                selectedIndex={selectedIndex}
+                onChange={(event) => {
+                  setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
+                }}
+                backgroundColor={colors.card}
+                tintColor="#e28700ff"
+                fontStyle={{ color: colors.text }}
+                activeFontStyle={{ color: "#fff" }}
+              />
             </View>
             {selectedIndex === 0 && (
               <SlideIn style={{ paddingTop: 20 }}>
@@ -63,7 +57,11 @@ export default function AuthHomeScreen(): React.JSX.Element {
               </SlideIn>
             )}
             {selectedIndex === 1 && (
-              <SlideIn direction="down" style={{ paddingTop: 20 }} duration={200}>
+              <SlideIn
+                direction="down"
+                style={{ paddingTop: 20 }}
+                duration={200}
+              >
                 <RegisterForm />
               </SlideIn>
             )}
@@ -80,11 +78,12 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     flex: 1,
     alignItems: "center",
+    // justifyContent: "center",
   },
   title: {
     fontWeight: "bold",
     fontSize: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   selector: {
     borderWidth: 1,
