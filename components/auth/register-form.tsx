@@ -1,12 +1,6 @@
+import { useRegistrationForm } from "@/hooks/auth/use-registration-form";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import {
-  isEmojiSafe,
-  validateEmailFormat,
-  validatePasswordSecurity,
-} from "@/utils/text";
 import { useTheme } from "@react-navigation/native";
-import { router } from "expo-router";
-import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,325 +12,123 @@ import { SlideIn } from "../animation/slide-in";
 import { PasswordInput } from "../forms/input";
 import { ThemedText } from "../themed-text";
 
-interface RegisterFormState {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface Error {
-  border: string;
-  value: string | undefined;
-}
-
-interface PasswordError {
-  border: string;
-  value: string[] | undefined;
-}
-
-interface RegisterFormErrorState {
-  name: Error;
-  email: Error;
-  password: PasswordError;
-  confirm: Error;
-}
-
 export default function RegisterForm() {
   const { colors } = useTheme();
   const placeholderColor = "#686868ff";
-  const errorBorder = "#9b2c2cff";
+
+  const { form, errors, isLoading, handleChange, handleRegister } =
+    useRegistrationForm();
+
   const backgroundColor = useThemeColor(
     { light: "#f7f7f7ff", dark: "#111111ff" },
     "background"
   );
 
-  const INITIAL_ERRORS: RegisterFormErrorState = {
-    name: { value: undefined, border: colors.border },
-    email: { value: undefined, border: colors.border },
-    password: { value: undefined, border: colors.border },
-    confirm: { value: undefined, border: colors.border },
-  };
+  const renderTextInput = (
+    label: string,
+    name: keyof typeof form,
+    placeholder: string,
+    keyboardType: "default" | "email-address" = "default",
+    autoCapitalize: "none" | "words" = "words"
+  ) => (
+    <View>
+      <ThemedText>{label}</ThemedText>
+      <TextInput
+        style={[
+          styles.input,
+          {
+            borderColor: errors[name as "name" | "email"].border,
+            color: colors.text,
+            backgroundColor,
+          },
+        ]}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderColor}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        value={form[name]}
+        onChangeText={(text) => handleChange(name, text)}
+      />
+      {errors[name as "name" | "email"].value && (
+        <SlideIn direction="down" offset={10}>
+          <ThemedText style={styles.errorText}>
+            {errors[name as "name" | "email"].value as string}
+          </ThemedText>
+        </SlideIn>
+      )}
+    </View>
+  );
 
-  const [form, setForm] = useState<RegisterFormState>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  // Función auxiliar para renderizar el input de contraseña
+  const renderPasswordInput = (
+    label: string,
+    name: "password" | "confirmPassword",
+    placeholder: string
+  ) => {
+    const errorData = errors[name] as any;
 
-  const handleChange = (name: keyof RegisterFormState, value: string) => {
-    setForm((prevform) => ({
-      ...prevform,
-      [name]: value,
-    }));
-  };
-
-  const [errors, setErrors] = useState<RegisterFormErrorState>(INITIAL_ERRORS);
-
-  const resetStyles = () => {
-    setErrors(INITIAL_ERRORS);
-  };
-
-  const resetForm = () => {
-    setForm({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
-  };
-
-  const validateForm = () => {
-    let isValid = true;
-
-    // validar que no hayan campos vacíos
-    const nameTrimed = form.name.trim();
-    const emailTrimed = form.email.trim();
-    const passwordTrimed = form.password.trim();
-    const confirmPasswordTrimed = form.confirmPassword.trim();
-
-    if (!nameTrimed) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        name: { value: "El nombre es obligatorio", border: errorBorder },
-      }));
-    }
-    if (!emailTrimed) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        email: { value: "El email es obligatorio", border: errorBorder },
-      }));
-    }
-    if (!passwordTrimed) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        password: {
-          value: ["La contraseña es obligatoria"],
-          border: errorBorder,
-        },
-      }));
-    }
-    if (!confirmPasswordTrimed) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        confirm: {
-          value: "La confirmación de contraseña es obligatoria",
-          border: errorBorder,
-        },
-      }));
-    }
-
-    // validar que no se pongan caracteres extraños
-    // validarr email
-    if (!isEmojiSafe(emailTrimed)) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        email: {
-          value: "El email contiene caracteres no permitidos",
-          border: errorBorder,
-        },
-      }));
-    }
-    // validar nombre
-    if (!isEmojiSafe(nameTrimed)) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        name: {
-          value: "El nombre contiene caracteres no permitidos",
-          border: errorBorder,
-        },
-      }));
-    }
-    // validar contraseña
-    if (!isEmojiSafe(passwordTrimed)) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        password: {
-          value: ["La contraseña contiene caracteres no permitidos"],
-          border: errorBorder,
-        },
-      }));
-    }
-    // validar confirmación de contraseña
-    if (!isEmojiSafe(confirmPasswordTrimed)) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        confirm: {
-          value:
-            "La confirmación de contraseña contiene caracteres no permitidos",
-          border: errorBorder,
-        },
-      }));
-    }
-
-    // validar que las contraseñas coincidan
-    if (passwordTrimed !== confirmPasswordTrimed) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        confirm: { value: "Las contraseñas no coinciden", border: errorBorder },
-      }));
-    }
-
-    // validar formato de correo electrónico
-    if (!validateEmailFormat(form.email)) {
-      isValid = false;
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        email: { value: "Formato inválido", border: errorBorder },
-      }));
-    }
-
-    // validar qeue la contraseña sea segura
-    const passwordTest = validatePasswordSecurity(passwordTrimed);
-    if (!passwordTest.isValid) {
-      isValid = false;
-      // determinar el mensaje de error
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        password: {
-          border: errorBorder,
-          value: passwordTest.failedRequirements.map((requirement) => {
-            switch (requirement) {
-              case "MIN_LENGTH":
-                return `La contraseña debe tener al menos ${8} caracteres`;
-              case "UPPERCASE":
-                return "La contraseña debe tener al menos una letra mayúscula";
-              case "LOWERCASE":
-                return "La contraseña debe tener al menos una letra minúscula";
-              case "NUMBER":
-                return "La contraseña debe tener al menos un número";
-              case "SPECIAL_CHAR":
-                return "La contraseña debe tener al menos un carácter especial";
-              default:
-                return "";
-            }
-          }),
-        },
-      }));
-
-      return isValid;
-    }
-  };
-
-  const handleRegister = () => {
-    resetStyles();
-    const formIsValid = validateForm();
-    if (!formIsValid) return;
-    resetForm();
-    // TODO: realizar llamada a API
-    router.replace("/(tabs)");
+    return (
+      <View>
+        {label && <ThemedText>{label}</ThemedText>}
+        <PasswordInput
+          style={[styles.input, { borderColor: errorData?.border }]}
+          placeholder={placeholder}
+          value={(form as any)[name]}
+          onChangeText={(text) => handleChange(name as any, text)}
+        />
+        {errorData.value && (
+          <>
+            {(Array.isArray(errorData.value)
+              ? errorData.value
+              : [errorData.value]
+            ).map((errMsg: string, index: number) => (
+              <SlideIn direction="down" offset={10} key={`${name}-${index}`}>
+                <ThemedText style={styles.errorText}>{errMsg}</ThemedText>
+              </SlideIn>
+            ))}
+          </>
+        )}
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
       {/* campo de nombre */}
-      <View>
-        <ThemedText>Nombre</ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              borderColor: errors.name.border,
-              color: colors.text,
-              backgroundColor,
-            },
-          ]}
-          placeholder="Satoshi Nakamoto"
-          placeholderTextColor={placeholderColor}
-          autoCapitalize="words"
-          autoCorrect={true}
-          value={form.name}
-          onChangeText={(text) => handleChange("name", text)}
-        />
-        {errors.name.value && (
-          <SlideIn direction="down" offset={10}>
-            <ThemedText style={styles.errorText}>
-              {errors.name.value}
-            </ThemedText>
-          </SlideIn>
-        )}
-      </View>
+      {renderTextInput(
+        "Nombre",
+        "name",
+        "Satoshi Nakamoto",
+        "default",
+        "words"
+      )}
+
       {/* campo de correo electrónico */}
-      <View>
-        <ThemedText>Email</ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              borderColor: errors.email.border,
-              color: colors.text,
-              backgroundColor,
-            },
-          ]}
-          placeholder="satoshi@nakamoto.com"
-          placeholderTextColor={placeholderColor}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={form.email}
-          onChangeText={(text) => handleChange("email", text)}
-        />
-        {errors.email.value && (
-          <SlideIn direction="down" offset={10}>
-            <ThemedText style={styles.errorText}>
-              {errors.email.value}
-            </ThemedText>
-          </SlideIn>
-        )}
-      </View>
-      <View style={{gap:20}}>
+      {renderTextInput(
+        "Email",
+        "email",
+        "satoshi@nakamoto.com",
+        "email-address",
+        "none"
+      )}
+
+      <View style={{ gap: 20 }}>
         {/* Campo de contraseña */}
-        <View>
-          <ThemedText>Contraseña</ThemedText>
-          <PasswordInput
-            style={[styles.input, { borderColor: errors.password.border }]}
-            placeholder="ingresa tu contraseña"
-            secureTextEntry
-            value={form.password}
-            onChangeText={(text) => handleChange("password", text)}
-          />
-          {errors.password.value && (
-            <>
-              {errors.password.value.map((errMsg, index) => (
-                <SlideIn direction="down" offset={10} key={index}>
-                  <ThemedText style={styles.errorText}>{errMsg}</ThemedText>
-                </SlideIn>
-              ))}
-            </>
-          )}
-        </View>
+        {renderPasswordInput("Contraseña", "password", "ingresa tu contraseña")}
+
         {/* Campo de confirmar contraseña */}
-        <View>
-          <PasswordInput
-            style={[styles.input, { borderColor: errors.confirm.border }]}
-            placeholder="confirmar contraseña"
-            // placeholderTextColor={placeholderColor}
-            secureTextEntry
-            value={form.confirmPassword}
-            onChangeText={(text) => handleChange("confirmPassword", text)}
-          />
-          {errors.confirm.value && (
-            <SlideIn direction="down" offset={10}>
-              <ThemedText style={styles.errorText}>
-                {errors.confirm.value}
-              </ThemedText>
-            </SlideIn>
-          )}
-        </View>
+        {renderPasswordInput("", "confirmPassword", "confirmar contraseña")}
       </View>
 
-      {/* Botón de enviar  */}
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={{ color: "white" }}>Crear Cuenta</Text>
+      {/* Botón de enviar */}
+      <TouchableOpacity
+        style={[styles.button, isLoading && styles.buttonDisabled]}
+        onPress={handleRegister}
+        disabled={isLoading}
+      >
+        <Text style={{ color: "white" }}>
+          {isLoading ? "Creando..." : "Crear Cuenta"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -345,7 +137,7 @@ export default function RegisterForm() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    gap: 10,
+    gap: 15, // Aumenté el gap para mejor separación
     flex: 1,
   },
   input: {
@@ -355,19 +147,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "200",
     padding: 10,
-    paddingInline: 12,
+    paddingHorizontal: 12, // Usar paddingHorizontal es mejor que paddingInline
   },
   button: {
-    padding: 10,
+    padding: 12, // Un poco más de padding se siente mejor
     width: "100%",
     backgroundColor: "#e28700ff",
     alignItems: "center",
     borderRadius: 8,
-    marginTop: 15,
+    marginTop: 20, // Aumenté el margen superior
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+    backgroundColor: "#9b2c2cff", // Color diferente cuando está deshabilitado
   },
   errorText: {
-    color: "red",
+    color: "#9b2c2cff", // Usar el mismo color de error para el texto
     fontSize: 14,
-    opacity: 0.8,
+    opacity: 1, // Asegurar que sea visible
+    marginTop: 4,
+    paddingLeft: 4,
   },
 });
