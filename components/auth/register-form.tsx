@@ -12,7 +12,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { SlideIn } from "../animation/slide-in";
 import { PasswordInput } from "../forms/input";
@@ -234,7 +234,7 @@ export default function RegisterForm() {
     if (!formIsValid) return;
     resetForm();
     // TODO: realizar llamada a API
-    router.replace('/(tabs)')
+    router.replace("/(tabs)");
   };
 
   return (
@@ -293,43 +293,45 @@ export default function RegisterForm() {
           </SlideIn>
         )}
       </View>
-      {/* Campo de contraseña */}
-      <View>
-        <ThemedText>Contraseña</ThemedText>
-        <PasswordInput
-          style={[styles.input, { borderColor: errors.password.border }]}
-          placeholder="ingresa tu contraseña"
-          secureTextEntry
-          value={form.password}
-          onChangeText={(text) => handleChange("password", text)}
-        />
-        {errors.password.value && (
-          <>
-            {errors.password.value.map((errMsg, index) => (
-              <SlideIn direction="down" offset={10} key={index}>
-                <ThemedText style={styles.errorText}>{errMsg}</ThemedText>
-              </SlideIn>
-            ))}
-          </>
-        )}
-      </View>
-      {/* Campo de confirmar contraseña */}
-      <View>
-        <PasswordInput
-          style={[styles.input, { borderColor: errors.confirm.border }]}
-          placeholder="confirmar contraseña"
-          // placeholderTextColor={placeholderColor}
-          secureTextEntry
-          value={form.confirmPassword}
-          onChangeText={(text) => handleChange("confirmPassword", text)}
-        />
-        {errors.confirm.value && (
-          <SlideIn direction="down" offset={10}>
-            <ThemedText style={styles.errorText}>
-              {errors.confirm.value}
-            </ThemedText>
-          </SlideIn>
-        )}
+      <View style={{gap:20}}>
+        {/* Campo de contraseña */}
+        <View>
+          <ThemedText>Contraseña</ThemedText>
+          <PasswordInput
+            style={[styles.input, { borderColor: errors.password.border }]}
+            placeholder="ingresa tu contraseña"
+            secureTextEntry
+            value={form.password}
+            onChangeText={(text) => handleChange("password", text)}
+          />
+          {errors.password.value && (
+            <>
+              {errors.password.value.map((errMsg, index) => (
+                <SlideIn direction="down" offset={10} key={index}>
+                  <ThemedText style={styles.errorText}>{errMsg}</ThemedText>
+                </SlideIn>
+              ))}
+            </>
+          )}
+        </View>
+        {/* Campo de confirmar contraseña */}
+        <View>
+          <PasswordInput
+            style={[styles.input, { borderColor: errors.confirm.border }]}
+            placeholder="confirmar contraseña"
+            // placeholderTextColor={placeholderColor}
+            secureTextEntry
+            value={form.confirmPassword}
+            onChangeText={(text) => handleChange("confirmPassword", text)}
+          />
+          {errors.confirm.value && (
+            <SlideIn direction="down" offset={10}>
+              <ThemedText style={styles.errorText}>
+                {errors.confirm.value}
+              </ThemedText>
+            </SlideIn>
+          )}
+        </View>
       </View>
 
       {/* Botón de enviar  */}
