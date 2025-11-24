@@ -17,11 +17,15 @@ interface PasswordInputProps {
   value?: string;
   style?: StyleProp<TextStyle>;
   placeholder?: string;
-  secureTextEntry: boolean;
   onChangeText?: (text: string) => void;
 }
 
-export function PasswordInput(props: PasswordInputProps) {
+export function PasswordInput({
+  value,
+  style,
+  placeholder,
+  onChangeText,
+}: PasswordInputProps) {
   const { colors } = useTheme();
   const [isSecure, setIsSecure] = useState(true);
   const backgroundColor = useThemeColor(
@@ -42,13 +46,13 @@ export function PasswordInput(props: PasswordInputProps) {
             backgroundColor,
           },
           styles.input,
-          props.style,
+          style,
         ]}
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         placeholderTextColor={PLACEHOLDER_COLOR}
         secureTextEntry={isSecure}
-        value={props.value}
-        onChangeText={props.onChangeText}
+        value={value}
+        onChangeText={onChangeText}
       />
       <TouchableOpacity
         onPress={toggleSecureEntry}
@@ -88,8 +92,8 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     textShadowOffset: {
       width: 0,
-      height: 1
+      height: 1,
     },
-    textShadowRadius: 4
+    textShadowRadius: 4,
   },
 });
