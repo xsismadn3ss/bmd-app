@@ -1,31 +1,23 @@
-import { Container } from "@/components/container";
-import { HelloWave } from "@/components/hello-wave";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { MeetingMap } from "@/components/home/meeting-map";
 import { StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <Container>
-        <View style={styles.headerContainer}>
-          <ThemedText>Bienvenido a Bitcoin Meetings</ThemedText>
-          <HelloWave />
-        </View>
-      </Container>
-    </ThemedView>
+    <View style={styles.container}>
+      <MeetingMap style={styles.mapMeeting} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
     flex: 1,
-    alignItems: 'center'
+    // borderWidth: 0,
+    // borderRadius: 25,
+    // overflow: "hidden",
   },
-  headerContainer: {
-    flexDirection: "row",
-    alignContent: "flex-start",
+  mapMeeting: {
+    height: "100%",
     width: "100%",
   },
 });
