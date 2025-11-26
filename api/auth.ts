@@ -36,3 +36,15 @@ export async function register(credentials: RegisterRequest) {
     ...credentials,
   });
 }
+
+interface VerifyResponse {
+  message: string;
+}
+
+export async function validateToken(token: string) {
+  return await axios.get<VerifyResponse>(`${BASE_URL}/validate-token`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
