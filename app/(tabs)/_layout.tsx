@@ -4,22 +4,21 @@ import React from "react";
 import { HapticTab } from "@/components/haptic-tab";
 import { HomeHeader } from "@/components/home/header";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
 import { useTranslation } from "@/context/LanguageContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const t  = useTranslation();
+  const t = useTranslation();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: 'orange',
         headerShown: true,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          minHeight: 60,
+          minHeight: 70,
         },
       }}
     >
@@ -31,17 +30,24 @@ export default function TabLayout() {
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
           headerTitle: () => <HomeHeader />,
-          tabBarActiveTintColor: "orange",
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: t('profile'),
+          title: t("profile"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="person.fill" color={color} />
           ),
-          tabBarActiveTintColor: "orange",
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: t("settings"),
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="option" color={color} />
+          ),
         }}
       />
     </Tabs>
