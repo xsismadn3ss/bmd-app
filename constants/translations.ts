@@ -42,6 +42,7 @@ export const TRANSLATIONS = {
     passwordNumber: "La contraseña debe tener al menos un número",
     passwordSpecialChar: "La contraseña debe tener al menos un carácter especial",
     emailAlreadyInUse: "El correo electrónico ya está en uso",
+    language: "Idioma",
   },
   en: {
     welcome: "Welcome",
@@ -86,5 +87,6 @@ export const TRANSLATIONS = {
     passwordNumber: "Password must contain at least one number",
     passwordSpecialChar: "Password must contain at least one special character",
     emailAlreadyInUse: "Email is already in use",
+    language: "Language",
   },
 };
