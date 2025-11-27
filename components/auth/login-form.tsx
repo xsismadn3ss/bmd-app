@@ -1,3 +1,4 @@
+import { useTranslation } from "@/context/LanguageContext";
 import { useLoginForm } from "@/hooks/auth/use-login-form";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
@@ -14,6 +15,7 @@ import { ThemedText } from "../themed-text";
 
 export default function LoginForm() {
   const { colors } = useTheme();
+  const t = useTranslation();
   const placeholderColor = "#686868ff";
 
   const { form, errors, isLoading, handleChange, handleLogin } = useLoginForm();
@@ -86,7 +88,7 @@ export default function LoginForm() {
     <View style={styles.container}>
       {/* Campo de correo electrónico */}
       {renderTextInput(
-        "Email",
+        t("email"),
         "email",
         "satoshi@nakamoto.com",
         "email-address",
@@ -94,7 +96,7 @@ export default function LoginForm() {
       )}
 
       {/* Campo de contraseña */}
-      {renderPasswordInput("Contraseña", "password", "ingresa tu contraseña")}
+      {renderPasswordInput(t("password"), "password", t("passwordPlaceholder"))}
 
       {/* Botón de enviar  */}
       <TouchableOpacity
@@ -103,7 +105,7 @@ export default function LoginForm() {
         disabled={isLoading}
       >
         <Text style={{ color: "white" }}>
-          {isLoading ? "Ingresando..." : "Ingresar"}
+          {isLoading ? `${t("loading")}...` : t("submit")}
         </Text>
       </TouchableOpacity>
     </View>

@@ -4,6 +4,7 @@ import RegisterForm from "@/components/auth/register-form";
 import { Container } from "@/components/container";
 import { ThemedText } from "@/components/themed-text";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { useTranslation } from "@/context/LanguageContext";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/native";
 import React, { useState } from "react";
@@ -17,6 +18,7 @@ import {
 
 export default function AuthHomeScreen(): React.JSX.Element {
   const { colors } = useTheme();
+  const t = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   return (
@@ -40,7 +42,7 @@ export default function AuthHomeScreen(): React.JSX.Element {
           <Container>
             <View style={[styles.selector, { borderColor: colors.border }]}>
               <SegmentedControl
-                values={["Iniciar sesión", "Registrarse"]}
+                values={[t('login'), t('signUp')]}
                 selectedIndex={selectedIndex}
                 onChange={(event) => {
                   setSelectedIndex(event.nativeEvent.selectedSegmentIndex);

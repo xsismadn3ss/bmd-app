@@ -1,4 +1,5 @@
 import { useAppTheme } from "@/context/AppThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/core";
@@ -10,6 +11,7 @@ export default function ThemeSelector({
 }: {
   onThemeChange?: (theme: "system" | "light" | "dark") => void;
 }) {
+  const { t } = useLanguage();
   const { setTheme } = useAppTheme();
   const { colors } = useTheme();
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
@@ -63,7 +65,7 @@ export default function ThemeSelector({
       }}
     >
       <SegmentedControl
-        values={["Sistema", "Claro", "Oscuro"]}
+        values={[t("system"), t("light"), t("dark")]}
         selectedIndex={selectedIndex}
         onChange={(event) => {
           setSelectedIndex(event.nativeEvent.selectedSegmentIndex);

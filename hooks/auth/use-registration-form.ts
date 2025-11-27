@@ -1,4 +1,5 @@
 import { register } from "@/api/auth";
+import { useTranslation } from "@/context/LanguageContext";
 import {
   isEmojiSafe,
   validateEmailFormat,
@@ -35,6 +36,7 @@ interface RegisterFormErrorState {
 
 export function useRegistrationForm() {
   const { colors } = useTheme();
+  const t = useTranslation();
   const errorBorder = "#9b2c2cff";
   const INITIAL_BORDER = colors.border;
 
@@ -86,13 +88,13 @@ export function useRegistrationForm() {
     if (!name.trim()) {
       isValid = false;
       newErrors.name = {
-        value: "El nombre es obligatorio",
+        value: t('nameRequired'),
         border: errorBorder,
       };
     } else if (!isEmojiSafe(name.trim())) {
       isValid = false;
       newErrors.name = {
-        value: "El nombre contiene caracteres no permitidos",
+        value: (t('nameWeirdCharacters')),
         border: errorBorder,
       };
     }
@@ -100,13 +102,13 @@ export function useRegistrationForm() {
     if (!email.trim()) {
       isValid = false;
       newErrors.email = {
-        value: "El email es obligatorio",
+        value: t('emailRequired'),
         border: errorBorder,
       };
     } else if (!isEmojiSafe(email.trim())) {
       isValid = false;
       newErrors.email = {
-        value: "El email contiene caracteres no permitidos",
+        value: t('emailWeirdCharacters'),
         border: errorBorder,
       };
     }
@@ -114,13 +116,13 @@ export function useRegistrationForm() {
     if (!password.trim()) {
       isValid = false;
       newErrors.password = {
-        value: ["La contraseña es obligatoria"],
+        value: [t('passwordRequired')],
         border: errorBorder,
       };
     } else if (!isEmojiSafe(password.trim())) {
       isValid = false;
       newErrors.password = {
-        value: ["La contraseña contiene caracteres no permitidos"],
+        value: [t('passwordWeirdCharacters')],
         border: errorBorder,
       };
     }
@@ -128,13 +130,13 @@ export function useRegistrationForm() {
     if (!confirmPassword.trim()) {
       isValid = false;
       newErrors.confirmPassword = {
-        value: "La confirmación es obligatoria",
+        value: t('confirmPasswordRequired'),
         border: errorBorder,
       };
     } else if (!isEmojiSafe(confirmPassword.trim())) {
       isValid = false;
       newErrors.confirmPassword = {
-        value: "La confirmación contiene caracteres no permitidos",
+        value: t('confirmPasswordWeirdCharacters'),
         border: errorBorder,
       };
     }
@@ -143,7 +145,7 @@ export function useRegistrationForm() {
     if (email.trim() && !validateEmailFormat(email.trim())) {
       isValid = false;
       newErrors.email = {
-        value: "Formato de email inválido",
+        value: t('emailFormatInvalid'),
         border: errorBorder,
       };
     }
@@ -156,7 +158,7 @@ export function useRegistrationForm() {
     ) {
       isValid = false;
       newErrors.confirmPassword = {
-        value: "Las contraseñas no coinciden",
+        value: t('confirmPasswordMismatch'),
         border: errorBorder,
       };
     }
@@ -169,15 +171,15 @@ export function useRegistrationForm() {
         const messages = passwordTest.failedRequirements.map((requirement) => {
           switch (requirement) {
             case "MIN_LENGTH":
-              return `Debe tener al menos 8 caracteres`;
+              return t('passwordMinLength');
             case "UPPERCASE":
-              return "Debe tener al menos una mayúscula";
+              return t('passwordUppercase');
             case "LOWERCASE":
-              return "Debe tener al menos una minúscula";
+              return t('passwordLowercase');
             case "NUMBER":
-              return "Debe tener al menos un número";
+              return t('passwordNumber');
             case "SPECIAL_CHAR":
-              return "Debe tener al menos un carácter especial";
+              return t('passwordSpecialChar');
             default:
               return "";
           }
@@ -215,22 +217,22 @@ export function useRegistrationForm() {
           setErrors((prev) => ({
             ...prev,
             confirmPassword: {
-              value: "No hay conexión a internet, se pudo crear la cuenta",
+              value: t('networkError'),
               border: colors.border,
             },
           }));
           return;
         }
-        let key = "email";
-        if (error?.status == 409) key = "email";
-        else key = "confirmPassword";
-        setErrors((prev) => ({
-          ...prev,
-          [key]: {
-            value: error.response.data.message,
-            border: errorBorder,
-          },
-        }));
+        if(error.status == 409){
+          setErrors((prev) => ({
+            ...prev,
+            email: {
+              value: t('emailAlreadyInUse'),
+              border: errorBorder,
+            },
+          }));
+          return;
+        }
       })
       .finally(() => {
         setIsLoading(false);

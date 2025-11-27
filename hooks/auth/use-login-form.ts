@@ -1,4 +1,5 @@
 import { login } from "@/api/auth";
+import { useLanguage } from "@/context/LanguageContext";
 import { isEmojiSafe, validateEmailFormat } from "@/utils/text";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "@react-navigation/native";
@@ -22,6 +23,7 @@ interface LoginFormErrorState {
 
 export function useLoginForm() {
   const { colors } = useTheme();
+  const { t } = useLanguage();
   const errorBorder = "#9b2c2cff";
   const INITIAL_BORDER = colors.border;
 
@@ -72,14 +74,14 @@ export function useLoginForm() {
 
     if (!emailTrimmed) {
       newErrors.email = {
-        value: "El campo email es requerido",
+        value: t("emailRequired"),
         border: errorBorder,
       };
       isValid = false;
     }
     if (!passwordTrimmed) {
       newErrors.password = {
-        value: "El campo de contraseña es requerido",
+        value: t("passwordRequired"),
         border: errorBorder,
       };
       isValid = false;
@@ -87,7 +89,7 @@ export function useLoginForm() {
 
     if (emailTrimmed && !isEmojiSafe(form.email)) {
       newErrors.email = {
-        value: "El email contiene caracteres no permitidos",
+        value: t("emailWeirdCharacters"),
         border: errorBorder,
       };
       isValid = false;
@@ -95,16 +97,20 @@ export function useLoginForm() {
 
     if (passwordTrimmed && !isEmojiSafe(form.password)) {
       newErrors.password = {
-        value: "La contraseña contiene caracteres no permitidos",
+        value: t("passwordWeirdCharacters"),
         border: errorBorder,
       };
       isValid = false;
     }
 
     // Validación 3: Validar formato de correo electrónico
-    if (emailTrimmed && !validateEmailFormat(form.email)) {
+    if (
+      emailTrimmed &&
+      !validateEmailFormat(emailTrimmed) &&
+      isEmojiSafe(form.email)
+    ) {
       newErrors.email = {
-        value: "Formato de email inválido",
+        value: t("emailFormatInvalid"),
         border: errorBorder,
       };
       isValid = false;
@@ -123,6 +129,7 @@ export function useLoginForm() {
         const data = response.data;
         await AsyncStorage.setItem("USER", data.name);
         await AsyncStorage.setItem("AUTH_TOKEN", data.token);
+        resetForm();
         router.replace("/(tabs)");
       })
       .catch((error) => {
@@ -130,22 +137,31 @@ export function useLoginForm() {
           setErrors((prev) => ({
             ...prev,
             password: {
-              value: "No hay conexión a internet, no se pudo iniciar sesion",
+              value: t("networkError"),
               border: colors.border,
             },
           }));
           return;
         }
-        let key = "email";
-        if(error?.status == 404) key = "email";
-        else key = 'password'
-        setErrors((prev) => ({
-          ...prev,
-          [key]: {
-            value: error.response.data.message,
-            border: errorBorder,
-          },
-        }));
+        if (error.response.status == 404) {
+          setErrors((prev) => ({
+            ...prev,
+            email: {
+              value: t("accountNotFound"),
+              border: errorBorder,
+            },
+          }));
+        }
+
+        if (error.response.status == 401) {
+          setErrors((prev) => ({
+            ...prev,
+            password: {
+              value: t("passwordIncorrect"),
+              border: errorBorder,
+            },
+          }));
+        }
       })
       .finally(() => {
         setIsLoading(false);

@@ -1,3 +1,4 @@
+import { useTranslation } from "@/context/LanguageContext";
 import { useRegistrationForm } from "@/hooks/auth/use-registration-form";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
@@ -14,6 +15,7 @@ import { ThemedText } from "../themed-text";
 
 export default function RegisterForm() {
   const { colors } = useTheme();
+  const t  = useTranslation();
   const placeholderColor = "#686868ff";
 
   const { form, errors, isLoading, handleChange, handleRegister } =
@@ -96,7 +98,7 @@ export default function RegisterForm() {
     <View style={styles.container}>
       {/* campo de nombre */}
       {renderTextInput(
-        "Nombre",
+        t('name'),
         "name",
         "Satoshi Nakamoto",
         "default",
@@ -105,7 +107,7 @@ export default function RegisterForm() {
 
       {/* campo de correo electrónico */}
       {renderTextInput(
-        "Email",
+        t('email'),
         "email",
         "satoshi@nakamoto.com",
         "email-address",
@@ -114,10 +116,10 @@ export default function RegisterForm() {
 
       <View style={{ gap: 20 }}>
         {/* Campo de contraseña */}
-        {renderPasswordInput("Contraseña", "password", "ingresa tu contraseña")}
+        {renderPasswordInput(t('password'), "password", t('passwordPlaceholder'))}
 
         {/* Campo de confirmar contraseña */}
-        {renderPasswordInput("", "confirmPassword", "confirmar contraseña")}
+        {renderPasswordInput("", "confirmPassword", t('confirmPasswordPlaceholder'))}
       </View>
 
       {/* Botón de enviar */}
@@ -127,7 +129,7 @@ export default function RegisterForm() {
         disabled={isLoading}
       >
         <Text style={{ color: "white" }}>
-          {isLoading ? "Creando..." : "Crear Cuenta"}
+          {isLoading ? `${t('creating')} ...` : t('createAccount')}
         </Text>
       </TouchableOpacity>
     </View>
