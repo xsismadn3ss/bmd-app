@@ -26,8 +26,14 @@ export function CardText({ children }: { children: string }) {
   return <ThemedText style={styles.cardText}>{children}</ThemedText>;
 }
 
-export function CardOption({ children }: { children?: React.ReactNode }) {
-  return <View style={styles.cardOption}>{children}</View>;
+export function CardOption({
+  children,
+  style,
+}: {
+  children?: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}) {
+  return <View style={[styles.cardOption, style]}>{children}</View>;
 }
 
 export function CardLine() {
@@ -44,7 +50,7 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowOpacity: 0.15,
-    shadowRadius:10,
+    shadowRadius: 10,
   },
   cardTitle: {
     fontWeight: "700",
