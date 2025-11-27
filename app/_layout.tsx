@@ -9,6 +9,7 @@ import "react-native-reanimated";
 
 import { AppThemeProvider, useAppTheme } from "@/context/AppThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -22,10 +23,6 @@ function RootLayoutInner() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="settings"
-          options={{ presentation: "fullScreenModal", title: "Ajustes" }}
-        />
       </Stack>
       <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
     </ThemeProvider>
@@ -35,9 +32,11 @@ function RootLayoutInner() {
 export default function RootLayout() {
   return (
     <AppThemeProvider>
-      <LanguageProvider>
-        <RootLayoutInner />
-      </LanguageProvider>
+      <GestureHandlerRootView>
+        <LanguageProvider>
+          <RootLayoutInner />
+        </LanguageProvider>
+      </GestureHandlerRootView>
     </AppThemeProvider>
   );
 }
