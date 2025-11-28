@@ -1,5 +1,6 @@
 import { useAppTheme } from "@/context/AppThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useThemeColor } from "@/hooks/use-theme-color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/core";
@@ -13,6 +14,10 @@ export default function ThemeSelector({
 }) {
   const { t } = useLanguage();
   const { setTheme } = useAppTheme();
+  const backgroundColor = useThemeColor(
+    { light: undefined, dark: "#1d1d1dff" },
+    "background"
+  );
   const { colors } = useTheme();
   const [selectedIndex, setSelectedIndex] = useState<number>(1);
 
@@ -62,6 +67,7 @@ export default function ThemeSelector({
     <Card
       style={{
         paddingBlock: 10,
+        paddingHorizontal: 10,
       }}
     >
       <SegmentedControl
@@ -70,7 +76,7 @@ export default function ThemeSelector({
         onChange={(event) => {
           setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
         }}
-        backgroundColor={colors.card}
+        backgroundColor={backgroundColor}
         tintColor="#e28700ff"
         fontStyle={{ color: colors.text }}
         activeFontStyle={{ color: "#ffffff" }}
