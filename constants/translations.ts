@@ -43,6 +43,11 @@ export const TRANSLATIONS = {
     passwordSpecialChar: "La contraseña debe tener al menos un carácter especial",
     emailAlreadyInUse: "El correo electrónico ya está en uso",
     language: "Idioma",
+    account: "Cuenta",
+    logout: "Cerrar sesión",
+    logoutQuestion: "¿Estás seguro que deseas cerrar sesión?",
+    yes: "Sí",
+    no: "No",
   },
   en: {
     welcome: "Welcome",
@@ -88,5 +93,10 @@ export const TRANSLATIONS = {
     passwordSpecialChar: "Password must contain at least one special character",
     emailAlreadyInUse: "Email is already in use",
     language: "Language",
+    account: "Account",
+    logout: "Logout",
+    logoutQuestion: "Are you sure you want to logout?",
+    yes: "Yes",
+    no: "No",
   },
 };
