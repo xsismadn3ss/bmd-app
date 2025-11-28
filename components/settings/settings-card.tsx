@@ -1,3 +1,4 @@
+import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { ThemedText } from "../themed-text";
@@ -37,14 +38,16 @@ export function CardOption({
 }
 
 export function CardLine() {
-  return <View style={styles.cardLine} />;
+  const { colors } = useTheme();
+  return <View style={[styles.cardLine, { borderColor: colors.text }]} />;
 }
 
 const styles = StyleSheet.create({
   card: {
-    padding: 10,
     elevation: 4,
     borderRadius: 8,
+    gap: 10,
+    paddingVertical: 10,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -66,12 +69,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingInline: 10,
+    paddingInline: 15,
   },
   cardLine: {
     width: "100%",
-    borderWidth: 0.4,
-    opacity: 0.1,
+    borderWidth: 0.3,
+    opacity: 0.2,
     marginBlock: 5,
   },
 });
