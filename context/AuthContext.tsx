@@ -10,19 +10,22 @@ import {
 
 type AuthContextType = {
   isAuth: boolean;
+  isLoaded: boolean;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
   isAuth: false,
   logout: () => {},
+  isLoaded: false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    async () => {
+    (async () => {
       // obtener token
       const token = await AsyncStorage.getItem("AUTH_TOKEN");
       if (!token) {
@@ -31,17 +34,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // validar token
-      validateToken(token)
-        .then((response) => {
-          if (response.status == 200) {
-            setIsAuth(true);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          setIsAuth(false);
-        });
-    };
+      try {
+        const response = await validateToken(token);
+        if (response.status === 200) {
+          setIsAuth(true);
+        }
+      } catch (error) {
+        setIsAuth(true);
+      } finally {
+        setIsLoaded(true);
+      }
+    })();
   }, []);
 
   const logout = async () => {
@@ -51,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = {
     isAuth,
+    isLoaded,
     logout,
   };
 
