@@ -1,7 +1,6 @@
 import { DraggableBottomSheet } from "@/components/ui/draggable-bottom-sheet";
 import { useLanguage } from "@/context/LanguageContext";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
@@ -18,7 +17,7 @@ export function LanguageCard() {
   const { lang, setLang } = useLanguage();
   const { colors } = useTheme();
   const [visible, setVisible] = useState<boolean>(false);
-  const headerHeight = useHeaderHeight();
+  const headerHeight = 400;
 
   const handleClose = useCallback(() => {
     setVisible(false);
