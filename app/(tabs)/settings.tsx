@@ -1,4 +1,5 @@
 import { Container } from "@/components/container";
+import { AccountCard } from "@/components/settings/account/account-card";
 import { LanguageCard } from "@/components/settings/language/language-card";
 import ThemeSelector from "@/components/settings/theme-selector";
 import { ThemedText } from "@/components/themed-text";
@@ -21,6 +22,11 @@ export default function SettingsScreen() {
         <View>
           <ThemedText style={styles.title}>{t("language")}</ThemedText>
           <LanguageCard />
+        </View>
+        {/* Cuenta */}
+        <View>
+          <ThemedText style={styles.title}>{t("account")}</ThemedText>
+          <AccountCard />
         </View>
       </Container>
     </ThemedView>
