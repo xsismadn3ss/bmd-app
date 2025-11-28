@@ -4,10 +4,12 @@ import RegisterForm from "@/components/auth/register-form";
 import { Container } from "@/components/container";
 import { ThemedText } from "@/components/themed-text";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "@/context/LanguageContext";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/native";
-import React, { useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -16,10 +18,23 @@ import {
   View,
 } from "react-native";
 
-export default function AuthHomeScreen(): React.JSX.Element {
+export default function AuthHomeScreen() {
   const { colors } = useTheme();
   const t = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const { isAuth, isLoaded } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && isAuth) {
+      // redirigir al inicio si esta autenticado
+      router.replace("/(tabs)");
+    }
+  });
+
+  if (!isLoaded && !isAuth) {
+    return null;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -42,7 +57,7 @@ export default function AuthHomeScreen(): React.JSX.Element {
           <Container>
             <View style={[styles.selector, { borderColor: colors.border }]}>
               <SegmentedControl
-                values={[t('login'), t('signUp')]}
+                values={[t("login"), t("signUp")]}
                 selectedIndex={selectedIndex}
                 onChange={(event) => {
                   setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
@@ -69,6 +84,7 @@ export default function AuthHomeScreen(): React.JSX.Element {
             )}
           </Container>
         </View>
+        {/* TODO: agegar opciones para cambiar tema e idioma */}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -80,7 +96,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     flex: 1,
     alignItems: "center",
-    // justifyContent: "center",
   },
   title: {
     fontWeight: "bold",
