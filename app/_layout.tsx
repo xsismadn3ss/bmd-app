@@ -3,13 +3,15 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { AppThemeProvider, useAppTheme } from "@/context/AppThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -17,6 +19,18 @@ export const unstable_settings = {
 
 function RootLayoutInner() {
   const { colorScheme } = useAppTheme();
+  const { isAuth, isLoaded } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuth && isLoaded) {
+      router.replace("/(auth)/sign-in-up");
+    }
+  }, [isAuth, isLoaded]);
+
+  if (!isAuth && !isLoaded) {
+    return null;
+  }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -32,11 +46,13 @@ function RootLayoutInner() {
 export default function RootLayout() {
   return (
     <AppThemeProvider>
-      <GestureHandlerRootView>
-        <LanguageProvider>
-          <RootLayoutInner />
-        </LanguageProvider>
-      </GestureHandlerRootView>
+      <AuthProvider>
+        <GestureHandlerRootView>
+          <LanguageProvider>
+            <RootLayoutInner />
+          </LanguageProvider>
+        </GestureHandlerRootView>
+      </AuthProvider>
     </AppThemeProvider>
   );
 }
