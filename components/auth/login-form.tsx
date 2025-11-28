@@ -1,86 +1,112 @@
+import { useTranslation } from "@/context/LanguageContext";
+import { useLoginForm } from "@/hooks/auth/use-login-form";
+import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
-import { useState } from "react";
 import {
-  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SlideIn } from "../animation/slide-in";
+import { PasswordInput } from "../forms/input";
 import { ThemedText } from "../themed-text";
-
-interface LoginFormState {
-  email: string;
-  password: string;
-}
 
 export default function LoginForm() {
   const { colors } = useTheme();
+  const t = useTranslation();
   const placeholderColor = "#686868ff";
-  const [form, setForm] = useState<LoginFormState>({
-    email: "",
-    password: "",
-  });
 
-  const handleChange = (name: keyof LoginFormState, value: string) => {
-    setForm((prevform) => ({
-      ...prevform,
-      [name]: value,
-    }));
-  };
+  const { form, errors, isLoading, handleChange, handleLogin } = useLoginForm();
 
-  const handleLogin = () => {
-    if (!form.email.trim() || !form.password.trim()) {
-      Alert.alert("Error", "Por favor, ingresa correo y contraseña.");
-      return;
-    }
+  const backgroundColor = useThemeColor(
+    { light: "#f7f7f7ff", dark: "#111111ff" },
+    "background"
+  );
 
-    // 💡 Lógica de autenticación: Aquí harías una llamada a tu API
-    console.log("Intentando iniciar sesión con:", form);
-    Alert.alert("Éxito", "Simulación de inicio de sesión exitoso.");
+  const renderTextInput = (
+    label: string,
+    name: "email",
+    placeholder: string,
+    keyboardType: "default" | "email-address" = "default",
+    autoCapitalize: "none" | "words" = "words"
+  ) => (
+    <View>
+      <ThemedText>{label}</ThemedText>
+      <TextInput
+        style={[
+          styles.input,
+          {
+            borderColor: errors[name].border,
+            color: colors.text,
+            backgroundColor,
+          },
+        ]}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderColor}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        value={form[name]}
+        onChangeText={(text) => handleChange(name, text)}
+      />
+      {errors[name].value && (
+        <SlideIn direction="down" offset={10}>
+          <ThemedText style={styles.errorText}>{errors[name].value}</ThemedText>
+        </SlideIn>
+      )}
+    </View>
+  );
 
-    // Simular redirección a la página principal después del login
-    // router.replace('/tabs/index');
+  // Función auxiliar para renderizar el input de contraseña
+  const renderPasswordInput = (
+    label: string,
+    name: "password",
+    placeholder: string
+  ) => {
+    const errorData = errors[name];
+
+    return (
+      <View>
+        <ThemedText>{label}</ThemedText>
+        <PasswordInput
+          style={[styles.input, { borderColor: errorData.border }]}
+          placeholder={placeholder}
+          value={form[name]}
+          onChangeText={(text) => handleChange(name, text)}
+        />
+        {errorData.value && (
+          <SlideIn direction="down" offset={10}>
+            <ThemedText style={styles.errorText}>{errorData.value}</ThemedText>
+          </SlideIn>
+        )}
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
       {/* Campo de correo electrónico */}
-      <View>
-        <ThemedText>Email</ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            { borderColor: colors.border, color: colors.text },
-          ]}
-          placeholder="satoshi@nakamoto.com"
-          placeholderTextColor={placeholderColor}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={form.email}
-          onChangeText={(text) => handleChange("email", text)}
-        />
-      </View>
-      {/* Campo de contraseña */}
-      <View>
-        <ThemedText>Contraseña</ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            { borderColor: colors.border, color: colors.text },
-          ]}
-          placeholder="ingresa tu contraseña"
-          placeholderTextColor={placeholderColor}
-          secureTextEntry
-          value={form.password}
-          onChangeText={(text) => handleChange("password", text)}
-        />
-      </View>
+      {renderTextInput(
+        t("email"),
+        "email",
+        "satoshi@nakamoto.com",
+        "email-address",
+        "none"
+      )}
 
-      {/* Botón de enviar  */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={{ color: "white" }}>Ingresar</Text>
+      {/* Campo de contraseña */}
+      {renderPasswordInput(t("password"), "password", t("passwordPlaceholder"))}
+
+      {/* Botón de enviar  */}
+      <TouchableOpacity
+        style={[styles.button, isLoading && styles.buttonDisabled]}
+        onPress={handleLogin}
+        disabled={isLoading}
+      >
+        <Text style={{ color: "white" }}>
+          {isLoading ? `${t("loading")}...` : t("submit")}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -89,7 +115,7 @@ export default function LoginForm() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    gap: 10,
+    gap: 15,
   },
   input: {
     borderWidth: 1,
@@ -98,13 +124,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "200",
     padding: 10,
+    paddingHorizontal: 12,
   },
   button: {
-    padding: 10,
+    padding: 12,
     width: "100%",
     backgroundColor: "#e28700ff",
     alignItems: "center",
-    borderRadius: 10,
-    marginTop: 15,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+    backgroundColor: "#9b2c2cff",
+  },
+  errorText: {
+    color: "#9b2c2cff",
+    fontSize: 14,
+    fontWeight: "400",
+    marginTop: 4,
+    paddingLeft: 4,
   },
 });

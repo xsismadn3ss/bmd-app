@@ -1,108 +1,136 @@
+import { useTranslation } from "@/context/LanguageContext";
+import { useRegistrationForm } from "@/hooks/auth/use-registration-form";
+import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
-import { useState } from "react";
 import {
-  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SlideIn } from "../animation/slide-in";
+import { PasswordInput } from "../forms/input";
 import { ThemedText } from "../themed-text";
-
-interface RegisterFormState {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
 
 export default function RegisterForm() {
   const { colors } = useTheme();
+  const t  = useTranslation();
   const placeholderColor = "#686868ff";
-  const [form, setForm] = useState<RegisterFormState>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
 
-  const handleChange = (name: keyof RegisterFormState, value: string) => {
-    setForm((prevform) => ({
-      ...prevform,
-      [name]: value,
-    }));
-  };
+  const { form, errors, isLoading, handleChange, handleRegister } =
+    useRegistrationForm();
 
-  const handleRegister = () => {
-    // TODO: implementar llamada a API
-    Alert.alert("Advertencia", "No implementado...");
+  const backgroundColor = useThemeColor(
+    { light: "#f7f7f7ff", dark: "#111111ff" },
+    "background"
+  );
+
+  const renderTextInput = (
+    label: string,
+    name: keyof typeof form,
+    placeholder: string,
+    keyboardType: "default" | "email-address" = "default",
+    autoCapitalize: "none" | "words" = "words"
+  ) => (
+    <View>
+      <ThemedText>{label}</ThemedText>
+      <TextInput
+        style={[
+          styles.input,
+          {
+            borderColor: errors[name as "name" | "email"].border,
+            color: colors.text,
+            backgroundColor,
+          },
+        ]}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderColor}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        value={form[name]}
+        onChangeText={(text) => handleChange(name, text)}
+      />
+      {errors[name as "name" | "email"].value && (
+        <SlideIn direction="down" offset={10}>
+          <ThemedText style={styles.errorText}>
+            {errors[name as "name" | "email"].value as string}
+          </ThemedText>
+        </SlideIn>
+      )}
+    </View>
+  );
+
+  // Función auxiliar para renderizar el input de contraseña
+  const renderPasswordInput = (
+    label: string,
+    name: "password" | "confirmPassword",
+    placeholder: string
+  ) => {
+    const errorData = errors[name] as any;
+
+    return (
+      <View>
+        {label && <ThemedText>{label}</ThemedText>}
+        <PasswordInput
+          style={[styles.input, { borderColor: errorData?.border }]}
+          placeholder={placeholder}
+          value={(form as any)[name]}
+          onChangeText={(text) => handleChange(name as any, text)}
+        />
+        {errorData.value && (
+          <>
+            {(Array.isArray(errorData.value)
+              ? errorData.value
+              : [errorData.value]
+            ).map((errMsg: string, index: number) => (
+              <SlideIn direction="down" offset={10} key={`${name}-${index}`}>
+                <ThemedText style={styles.errorText}>{errMsg}</ThemedText>
+              </SlideIn>
+            ))}
+          </>
+        )}
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
       {/* campo de nombre */}
-      <View>
-        <ThemedText>Nombre</ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            { borderColor: colors.border, color: colors.text },
-          ]}
-          placeholder="Satoshi Nakamoto"
-          placeholderTextColor={placeholderColor}
-          autoCorrect={true}
-          value={form.name}
-          onChangeText={(text) => handleChange("name", text)}
-        />
-      </View>
-      {/* campo de correo electrónico */}
-      <View>
-        <ThemedText>Email</ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            { borderColor: colors.border, color: colors.text },
-          ]}
-          placeholder="satoshi@nakamoto.com"
-          placeholderTextColor={placeholderColor}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={form.email}
-          onChangeText={(text) => handleChange("email", text)}
-        />
-      </View>
-      {/* Campo de contraseña */}
-      <View>
-        <ThemedText>Contraseña</ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            { borderColor: colors.border, color: colors.text },
-          ]}
-          placeholder="ingresa tu contraseña"
-          placeholderTextColor={placeholderColor}
-          secureTextEntry
-          value={form.password}
-          onChangeText={(text) => handleChange("password", text)}
-        />
-      </View>
-      {/* Campo de confirmar contraseña */}
-      <TextInput
-        style={[
-          styles.input,
-          { borderColor: colors.border, color: colors.text },
-        ]}
-        placeholder="confirmar contraseña"
-        placeholderTextColor={placeholderColor}
-        secureTextEntry
-        value={form.confirmPassword}
-        onChangeText={(text) => handleChange("confirmPassword", text)}
-      />
+      {renderTextInput(
+        t('name'),
+        "name",
+        "Satoshi Nakamoto",
+        "default",
+        "words"
+      )}
 
-      {/* Botón de enviar  */}
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={{ color: "white" }}>Crear Cuenta</Text>
+      {/* campo de correo electrónico */}
+      {renderTextInput(
+        t('email'),
+        "email",
+        "satoshi@nakamoto.com",
+        "email-address",
+        "none"
+      )}
+
+      <View style={{ gap: 20 }}>
+        {/* Campo de contraseña */}
+        {renderPasswordInput(t('password'), "password", t('passwordPlaceholder'))}
+
+        {/* Campo de confirmar contraseña */}
+        {renderPasswordInput("", "confirmPassword", t('confirmPasswordPlaceholder'))}
+      </View>
+
+      {/* Botón de enviar */}
+      <TouchableOpacity
+        style={[styles.button, isLoading && styles.buttonDisabled]}
+        onPress={handleRegister}
+        disabled={isLoading}
+      >
+        <Text style={{ color: "white" }}>
+          {isLoading ? `${t('creating')} ...` : t('createAccount')}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -111,7 +139,8 @@ export default function RegisterForm() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    gap: 10,
+    gap: 15, // Aumenté el gap para mejor separación
+    flex: 1,
   },
   input: {
     borderWidth: 1,
@@ -120,13 +149,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "200",
     padding: 10,
+    paddingHorizontal: 12, // Usar paddingHorizontal es mejor que paddingInline
   },
   button: {
-    padding: 10,
+    padding: 12, // Un poco más de padding se siente mejor
     width: "100%",
     backgroundColor: "#e28700ff",
     alignItems: "center",
-    borderRadius: 10,
-    marginTop: 15,
+    borderRadius: 8,
+    marginTop: 20, // Aumenté el margen superior
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+    backgroundColor: "#9b2c2cff", // Color diferente cuando está deshabilitado
+  },
+  errorText: {
+    color: "#9b2c2cff", // Usar el mismo color de error para el texto
+    fontSize: 14,
+    opacity: 1, // Asegurar que sea visible
+    marginTop: 4,
+    paddingLeft: 4,
   },
 });
