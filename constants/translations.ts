@@ -48,6 +48,8 @@ export const TRANSLATIONS = {
     logoutQuestion: "¿Estás seguro que deseas cerrar sesión?",
     yes: "Sí",
     no: "No",
+    en: "Inglés",
+    es: "Español",
   },
   en: {
     welcome: "Welcome",
@@ -98,5 +100,7 @@ export const TRANSLATIONS = {
     logoutQuestion: "Are you sure you want to logout?",
     yes: "Yes",
     no: "No",
+    en: "English",
+    es: "Spanish",
   },
 };
