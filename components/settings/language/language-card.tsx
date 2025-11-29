@@ -1,8 +1,8 @@
 import { DraggableBottomSheet } from "@/components/ui/draggable-bottom-sheet";
 import { useLanguage } from "@/context/LanguageContext";
+import { useModal } from "@/hooks/use-modal";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useTheme } from "@react-navigation/native";
-import { useCallback, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { ThemedText } from "../../themed-text";
 import { Card, CardOption } from "../settings-card";
@@ -14,20 +14,16 @@ const languages = {
 };
 
 export function LanguageCard() {
+  const { openModal, closeModal, isVisible } = useModal();
   const { lang, setLang } = useLanguage();
   const { colors } = useTheme();
-  const [visible, setVisible] = useState<boolean>(false);
   const headerHeight = 400;
-
-  const handleClose = useCallback(() => {
-    setVisible(false);
-  }, []);
 
   return (
     <>
       {/* Tarjeta */}
       <Card>
-        <TouchableOpacity onPress={() => setVisible(true)}>
+        <TouchableOpacity onPress={openModal}>
           <CardOption style={styles.iconContainer}>
             <ThemedText style={{ opacity: 0.6 }}>{languages[lang]}</ThemedText>
             <Entypo
@@ -42,14 +38,14 @@ export function LanguageCard() {
 
       {/* Drawer */}
       <DraggableBottomSheet
-        isVisible={visible}
-        onClose={handleClose}
+        isVisible={isVisible}
+        onClose={closeModal}
         headerHeight={headerHeight}
       >
         <LanguageList
           currentLang={lang}
           onSelect={setLang}
-          onClose={handleClose}
+          onClose={closeModal}
         />
       </DraggableBottomSheet>
     </>
@@ -58,7 +54,7 @@ export function LanguageCard() {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    paddingVertical: 8
+    paddingVertical: 8,
   },
   button: {
     borderRadius: 20,
