@@ -7,6 +7,7 @@ import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
+import SplashScreen from "@/components/root/splash-screen";
 import { AppThemeProvider, useAppTheme } from "@/context/AppThemeContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { useEffect } from "react";
@@ -29,7 +30,7 @@ function RootLayoutInner() {
   }, [isAuth, isLoaded]);
 
   if (!isAuth && !isLoaded) {
-    return null;
+    return <SplashScreen />;
   }
 
   return (
