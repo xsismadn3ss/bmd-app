@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/core";
 import { useEffect, useState } from "react";
-import { Card } from "./settings-card";
+import { Card } from "../settings-card";
 
 export default function ThemeSelector({
   onThemeChange,

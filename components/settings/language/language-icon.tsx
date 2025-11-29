@@ -1,41 +1,31 @@
+import { ThemedText } from "@/components/themed-text";
 import { DraggableBottomSheet } from "@/components/ui/draggable-bottom-sheet";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import { useModal } from "@/hooks/use-modal";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useTheme } from "@react-navigation/native";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { ThemedText } from "../../themed-text";
-import { Card, CardOption } from "../settings-card";
 import { LanguageList } from "./language-list";
 
-const languages = {
-  en: "English",
-  es: "Español",
-};
-
-export function LanguageCard() {
-  const { openModal, closeModal, isVisible } = useModal();
+export function LanguageIcon() {
+  const { isVisible, openModal, closeModal } = useModal();
+  const t = useTranslation();
   const { lang, setLang } = useLanguage();
   const { colors } = useTheme();
   const headerHeight = 400;
 
   return (
     <>
-      {/* Tarjeta */}
-      <Card>
-        <TouchableOpacity onPress={openModal}>
-          <CardOption style={styles.iconContainer}>
-            <ThemedText style={{ opacity: 0.6 }}>{languages[lang]}</ThemedText>
-            <Entypo
-              name="language"
-              size={24}
-              color={colors.text}
-              style={{ opacity: 0.4 }}
-            />
-          </CardOption>
-        </TouchableOpacity>
-      </Card>
-
+      {/* Icono */}
+      <TouchableOpacity style={styles.button} onPress={openModal}>
+        <Entypo
+          name="language"
+          size={24}
+          color={colors.text}
+          style={[styles.icon, { textShadowColor: colors.text }]}
+        />
+        <ThemedText style={styles.text}>{t(lang)}</ThemedText>
+      </TouchableOpacity>
       {/* Drawer */}
       <DraggableBottomSheet
         isVisible={isVisible}
@@ -53,10 +43,21 @@ export function LanguageCard() {
 }
 
 const styles = StyleSheet.create({
-  iconContainer: {
-    paddingVertical: 8,
+  icon: {
+    textShadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    textShadowRadius: 1,
+    shadowOpacity: 0.3,
+    opacity: 0.4,
   },
   button: {
-    borderRadius: 20,
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 12,
+    fontWeight: "200",
+    opacity: 0.6,
   },
 });
