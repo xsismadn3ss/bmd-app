@@ -1,7 +1,7 @@
 import { Container } from "@/components/container";
 import { AccountCard } from "@/components/settings/account/account-card";
 import { LanguageCard } from "@/components/settings/language/language-card";
-import ThemeSelector from "@/components/settings/theme-selector";
+import ThemeSelector from "@/components/settings/theme/theme-selector";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useTranslation } from "@/context/LanguageContext";
