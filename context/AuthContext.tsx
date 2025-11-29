@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = await AsyncStorage.getItem("AUTH_TOKEN");
       if (!token) {
         setIsAuth(false);
+        setIsLoaded(true);
         return;
       }
 
