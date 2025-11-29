@@ -2,10 +2,13 @@ import { SlideIn } from "@/components/animation/slide-in";
 import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
 import { Container } from "@/components/container";
+import { LanguageIcon } from "@/components/settings/language/language-icon";
+import { ThemeIcon } from "@/components/settings/theme/theme-icon";
 import { ThemedText } from "@/components/themed-text";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "@/context/LanguageContext";
+import Entypo from "@expo/vector-icons/Entypo";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -82,9 +85,18 @@ export default function AuthHomeScreen() {
                 <RegisterForm />
               </SlideIn>
             )}
+            <View style={styles.options}>
+              <LanguageIcon />
+              <Entypo
+                name="dot-single"
+                size={24}
+                color={colors.text}
+                style={styles.dot}
+              />
+              <ThemeIcon />
+            </View>
           </Container>
         </View>
-        {/* TODO: agegar opciones para cambiar tema e idioma */}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -106,5 +118,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     padding: 4,
+  },
+  options: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 20,
+    marginTop: 30,
+  },
+  dot: {
+    marginBottom: 20,
+    opacity: 0.5,
   },
 });
