@@ -7,7 +7,11 @@ import {
 
 type ButtonType = "primary" | "secondary";
 
-type ButtonProps = TouchableOpacityProps & { type?: ButtonType } & {
+type ButtonProps = TouchableOpacityProps & {
+  /** Tipo de botón, puede ser "primary" o "secondary" */
+  type?: ButtonType 
+} & {
+  /** Indica si el botón debe tener sombra */ 
   shadow?: boolean;
 };
 
