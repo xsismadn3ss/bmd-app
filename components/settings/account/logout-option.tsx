@@ -1,28 +1,27 @@
 import { ThemedText } from "@/components/themed-text";
+import { TranslatedText } from "@/components/translated-text";
+import { Button } from "@/components/ui/button";
 import { DraggableBottomSheet } from "@/components/ui/draggable-bottom-sheet";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "@/context/LanguageContext";
+import { useModal } from "@/hooks/use-modal";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { CardOption } from "../settings-card";
 
 export function LogoutOption() {
   const t = useTranslation();
+  const { openModal, closeModal, isVisible } = useModal();
   const { colors } = useTheme();
   const { logout } = useAuth();
   const router = useRouter();
-  const [visible, setVisible] = useState<boolean>(false);
   const headerHeight = 400;
-
-  const handleClose = useCallback(() => {
-    setVisible(false);
-  }, []);
 
   const handleLogout = () => {
     logout();
+    closeModal();
     router.replace("/(auth)/sign-in-up");
   };
 
@@ -30,10 +29,7 @@ export function LogoutOption() {
     <>
       {/* Opción */}
       <CardOption>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => setVisible(true)}
-        >
+        <TouchableOpacity style={styles.option} onPress={openModal}>
           <ThemedText style={styles.text}>{t("logout")}</ThemedText>
           <MaterialIcons
             name="logout"
@@ -45,36 +41,18 @@ export function LogoutOption() {
       </CardOption>
       {/* Drawer */}
       <DraggableBottomSheet
-        isVisible={visible}
-        onClose={handleClose}
+        isVisible={isVisible}
+        onClose={closeModal}
         headerHeight={headerHeight}
       >
         <ThemedText style={styles.modalTitle}>{t("logoutQuestion")}</ThemedText>
-        <View style={styles.modalBtnContainer}>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              {
-                backgroundColor: colors.background,
-                borderColor: colors.border,
-              },
-            ]}
-            onPress={handleLogout}
-          >
-            <ThemedText>{t("yes")}</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              {
-                backgroundColor: colors.background,
-                borderColor: colors.border,
-              },
-            ]}
-            onPress={handleClose}
-          >
-            <ThemedText style={styles.no}>{t("no")}</ThemedText>
-          </TouchableOpacity>
+        <View style={styles.row}>
+          <Button type="secondary" onPress={handleLogout} shadow={false}>
+            <TranslatedText value="yes" />
+          </Button>
+          <Button type="secondary" onPress={closeModal} shadow={false}>
+            <TranslatedText value="no" style={styles.no} />
+          </Button>
         </View>
       </DraggableBottomSheet>
     </>
@@ -83,11 +61,12 @@ export function LogoutOption() {
 
 const styles = StyleSheet.create({
   icon: {
-    opacity: 0.6,
+    opacity: 0.9,
   },
   text: {
     color: "red",
-    opacity: 0.6,
+    fontWeight: "600",
+    opacity: 0.9,
   },
   option: {
     flexDirection: "row",
@@ -97,28 +76,16 @@ const styles = StyleSheet.create({
   modalTitle: {
     textAlign: "center",
     fontWeight: "bold",
+    opacity: 0.8,
+    marginBottom: 20,
   },
-  modalBtnContainer: {
+  row: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 30,
     gap: 30,
-  },
-  button: {
-    elevation: 1,
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 10,
-    shadowOpacity: 0.15,
   },
   no: {
     color: "red",
-    opacity: 0.6,
+    opacity: 0.8,
   },
 });
