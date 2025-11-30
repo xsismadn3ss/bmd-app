@@ -6,8 +6,11 @@ type ThemePreference = "system" | "light" | "dark";
 type ResolvedScheme = "light" | "dark";
 
 interface AppThemeContextValue {
+  /** tema seleccionado por el usuario o sistema */
   theme: ThemePreference;
+  /** esquema de color resuelto (light o dark) */
   colorScheme: ResolvedScheme;
+  /** función para cambiar el tema */
   setTheme: (theme: ThemePreference) => void;
 }
 
