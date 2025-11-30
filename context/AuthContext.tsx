@@ -9,8 +9,11 @@ import {
 } from "react";
 
 type AuthContextType = {
+  /** estado de autenticación del usuario */
   isAuth: boolean;
+  /** indica si se ha cargado el estado de autenticación */
   isLoaded: boolean;
+  /** función para cerrar sesión (solo elimina el token) */
   logout: () => void;
 };
 
@@ -68,9 +71,4 @@ export const useAuth = () => {
     throw new Error("useAuth debe usarse dentro de AuthProvider");
   }
   return ctx;
-};
-
-export const useAuthStatus = () => {
-  const { isAuth } = useAuth();
-  return isAuth;
 };

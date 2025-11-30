@@ -3,29 +3,24 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useTheme } from "@react-navigation/native";
 import { useState } from "react";
 import {
-  StyleProp,
   StyleSheet,
   TextInput,
-  TextStyle,
+  TextInputProps,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 const PLACEHOLDER_COLOR = "#686868ff";
 
-interface PasswordInputProps {
-  value?: string;
-  style?: StyleProp<TextStyle>;
-  placeholder?: string;
-  onChangeText?: (text: string) => void;
-}
+type InputProps = TextInputProps;
 
 export function PasswordInput({
   value,
   style,
   placeholder,
   onChangeText,
-}: PasswordInputProps) {
+  ...rest
+}: InputProps) {
   const { colors } = useTheme();
   const [isSecure, setIsSecure] = useState(true);
   const backgroundColor = useThemeColor(
@@ -53,6 +48,7 @@ export function PasswordInput({
         secureTextEntry={isSecure}
         value={value}
         onChangeText={onChangeText}
+        {...rest}
       />
       <TouchableOpacity
         onPress={toggleSecureEntry}
@@ -69,6 +65,42 @@ export function PasswordInput({
   );
 }
 
+export function Input({
+  style,
+  placeholder,
+  placeholderTextColor = PLACEHOLDER_COLOR,
+  keyboardType,
+  autoCapitalize,
+  value,
+  onChangeText,
+  ...rest
+}: InputProps) {
+  const { colors } = useTheme();
+  const backgroundColor = useThemeColor(
+    { light: "#f7f7f7ff", dark: "#111111ff" },
+    "background"
+  );
+  return (
+    <TextInput
+      style={[
+        {
+          color: colors.text,
+          backgroundColor,
+        },
+        styles.input,
+        style,
+      ]}
+      placeholder={placeholder}
+      placeholderTextColor={placeholderTextColor}
+      keyboardType={keyboardType}
+      autoCapitalize={autoCapitalize}
+      value={value}
+      onChangeText={onChangeText}
+      {...rest}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -79,6 +111,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
+    fontSize: 16,
     fontWeight: "200",
     width: "100%",
   },

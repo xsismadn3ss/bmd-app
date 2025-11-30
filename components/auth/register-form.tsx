@@ -1,30 +1,24 @@
 import { useTranslation } from "@/context/LanguageContext";
 import { useRegistrationForm } from "@/hooks/auth/use-registration-form";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { SlideIn } from "../animation/slide-in";
-import { PasswordInput } from "../forms/input";
-import { ThemedText } from "../themed-text";
+import { Input, PasswordInput } from "../forms/input";
+import { TranslatedText } from "../translated-text";
+import { Button } from "../ui/button";
 
 export default function RegisterForm() {
   const { colors } = useTheme();
-  const t  = useTranslation();
-  const placeholderColor = "#686868ff";
+  const t = useTranslation();
+  const [borderColor, setBorderColor] = useState(colors.border);
+
+  useEffect(() => {
+    setBorderColor(colors.border);
+  }, [colors.border]);
 
   const { form, errors, isLoading, handleChange, handleRegister } =
     useRegistrationForm();
-
-  const backgroundColor = useThemeColor(
-    { light: "#f7f7f7ff", dark: "#111111ff" },
-    "background"
-  );
 
   const renderTextInput = (
     label: string,
@@ -34,18 +28,12 @@ export default function RegisterForm() {
     autoCapitalize: "none" | "words" = "words"
   ) => (
     <View>
-      <ThemedText>{label}</ThemedText>
-      <TextInput
-        style={[
-          styles.input,
-          {
-            borderColor: errors[name as "name" | "email"].border,
-            color: colors.text,
-            backgroundColor,
-          },
-        ]}
+      <TranslatedText value={label} />
+      <Input
+        style={{
+          borderColor: errors[name as "name" | "email"].border ?? borderColor,
+        }}
         placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
         value={form[name]}
@@ -53,9 +41,10 @@ export default function RegisterForm() {
       />
       {errors[name as "name" | "email"].value && (
         <SlideIn direction="down" offset={10}>
-          <ThemedText style={styles.errorText}>
-            {errors[name as "name" | "email"].value as string}
-          </ThemedText>
+          <TranslatedText
+            value={errors[name as "name" | "email"].value as string}
+            style={styles.errorText}
+          />
         </SlideIn>
       )}
     </View>
@@ -71,9 +60,9 @@ export default function RegisterForm() {
 
     return (
       <View>
-        {label && <ThemedText>{label}</ThemedText>}
+        {label && <TranslatedText value={label} />}
         <PasswordInput
-          style={[styles.input, { borderColor: errorData?.border }]}
+          style={{ borderColor: errorData?.border ?? borderColor }}
           placeholder={placeholder}
           value={(form as any)[name]}
           onChangeText={(text) => handleChange(name as any, text)}
@@ -85,7 +74,7 @@ export default function RegisterForm() {
               : [errorData.value]
             ).map((errMsg: string, index: number) => (
               <SlideIn direction="down" offset={10} key={`${name}-${index}`}>
-                <ThemedText style={styles.errorText}>{errMsg}</ThemedText>
+                <TranslatedText value={errMsg} style={styles.errorText} />
               </SlideIn>
             ))}
           </>
@@ -97,17 +86,11 @@ export default function RegisterForm() {
   return (
     <View style={styles.container}>
       {/* campo de nombre */}
-      {renderTextInput(
-        t('name'),
-        "name",
-        "Satoshi Nakamoto",
-        "default",
-        "words"
-      )}
+      {renderTextInput("name", "name", "Satoshi Nakamoto", "default", "words")}
 
       {/* campo de correo electrónico */}
       {renderTextInput(
-        t('email'),
+        "email",
         "email",
         "satoshi@nakamoto.com",
         "email-address",
@@ -116,22 +99,28 @@ export default function RegisterForm() {
 
       <View style={{ gap: 20 }}>
         {/* Campo de contraseña */}
-        {renderPasswordInput(t('password'), "password", t('passwordPlaceholder'))}
+        {renderPasswordInput("password", "password", t("passwordPlaceholder"))}
 
         {/* Campo de confirmar contraseña */}
-        {renderPasswordInput("", "confirmPassword", t('confirmPasswordPlaceholder'))}
+        {renderPasswordInput(
+          "",
+          "confirmPassword",
+          t("confirmPasswordPlaceholder")
+        )}
       </View>
 
       {/* Botón de enviar */}
-      <TouchableOpacity
+      <Button
         style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={handleRegister}
         disabled={isLoading}
+        shadow={false}
       >
-        <Text style={{ color: "white" }}>
-          {isLoading ? `${t('creating')} ...` : t('createAccount')}
-        </Text>
-      </TouchableOpacity>
+        <TranslatedText
+          value={isLoading ? "creating" : "createAccount"}
+          style={{ color: "white" }}
+        />
+      </Button>
     </View>
   );
 }
@@ -139,7 +128,7 @@ export default function RegisterForm() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    gap: 15, // Aumenté el gap para mejor separación
+    gap: 15,
     flex: 1,
   },
   input: {
@@ -149,24 +138,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "200",
     padding: 10,
-    paddingHorizontal: 12, // Usar paddingHorizontal es mejor que paddingInline
+    paddingHorizontal: 12,
   },
   button: {
-    padding: 12, // Un poco más de padding se siente mejor
-    width: "100%",
-    backgroundColor: "#e28700ff",
     alignItems: "center",
-    borderRadius: 8,
-    marginTop: 20, // Aumenté el margen superior
   },
   buttonDisabled: {
     opacity: 0.7,
-    backgroundColor: "#9b2c2cff", // Color diferente cuando está deshabilitado
+    backgroundColor: "#9b2c2cff",
   },
   errorText: {
-    color: "#9b2c2cff", // Usar el mismo color de error para el texto
+    color: "#9b2c2cff",
     fontSize: 14,
-    opacity: 1, // Asegurar que sea visible
+    opacity: 1,
     marginTop: 4,
     paddingLeft: 4,
   },

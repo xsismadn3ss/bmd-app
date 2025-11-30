@@ -14,9 +14,13 @@ const LANG_KEY = "app_language";
 type Lang = keyof typeof TRANSLATIONS;
 
 type LanguageContextType = {
+  /** idioma seleccionado */
   lang: Lang;
+  /** función para cambiar el idioma */
   setLang: (l: Lang) => void;
+  /** función de traducción */
   t: (key: string) => string;
+  /** objeto de traducciones completo */
   translations: (typeof TRANSLATIONS)[Lang];
 };
 

@@ -1,29 +1,23 @@
 import { useTranslation } from "@/context/LanguageContext";
 import { useLoginForm } from "@/hooks/auth/use-login-form";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { SlideIn } from "../animation/slide-in";
-import { PasswordInput } from "../forms/input";
-import { ThemedText } from "../themed-text";
+import { Input, PasswordInput } from "../forms/input";
+import { TranslatedText } from "../translated-text";
+import { Button } from "../ui/button";
 
 export default function LoginForm() {
   const { colors } = useTheme();
   const t = useTranslation();
-  const placeholderColor = "#686868ff";
+  const [borderColor, setBorderColor] = useState(colors.border);
+
+  useEffect(() => {
+    setBorderColor(colors.border);
+  }, [colors.border]);
 
   const { form, errors, isLoading, handleChange, handleLogin } = useLoginForm();
-
-  const backgroundColor = useThemeColor(
-    { light: "#f7f7f7ff", dark: "#111111ff" },
-    "background"
-  );
 
   const renderTextInput = (
     label: string,
@@ -33,18 +27,10 @@ export default function LoginForm() {
     autoCapitalize: "none" | "words" = "words"
   ) => (
     <View>
-      <ThemedText>{label}</ThemedText>
-      <TextInput
-        style={[
-          styles.input,
-          {
-            borderColor: errors[name].border,
-            color: colors.text,
-            backgroundColor,
-          },
-        ]}
+      <TranslatedText value={label} />
+      <Input
+        style={{ borderColor: errors[name].border ?? borderColor }}
         placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
         value={form[name]}
@@ -52,7 +38,7 @@ export default function LoginForm() {
       />
       {errors[name].value && (
         <SlideIn direction="down" offset={10}>
-          <ThemedText style={styles.errorText}>{errors[name].value}</ThemedText>
+          <TranslatedText value={errors[name].value} style={styles.errorText} />
         </SlideIn>
       )}
     </View>
@@ -68,16 +54,16 @@ export default function LoginForm() {
 
     return (
       <View>
-        <ThemedText>{label}</ThemedText>
+        <TranslatedText value={label} />
         <PasswordInput
-          style={[styles.input, { borderColor: errorData.border }]}
+          style={{ borderColor: errorData.border ?? borderColor }}
           placeholder={placeholder}
           value={form[name]}
           onChangeText={(text) => handleChange(name, text)}
         />
         {errorData.value && (
           <SlideIn direction="down" offset={10}>
-            <ThemedText style={styles.errorText}>{errorData.value}</ThemedText>
+            <TranslatedText value={errorData.value} style={styles.errorText} />
           </SlideIn>
         )}
       </View>
@@ -88,7 +74,7 @@ export default function LoginForm() {
     <View style={styles.container}>
       {/* Campo de correo electrónico */}
       {renderTextInput(
-        t("email"),
+        "email",
         "email",
         "satoshi@nakamoto.com",
         "email-address",
@@ -96,18 +82,24 @@ export default function LoginForm() {
       )}
 
       {/* Campo de contraseña */}
-      {renderPasswordInput(t("password"), "password", t("passwordPlaceholder"))}
+      {renderPasswordInput("password", "password", t("passwordPlaceholder"))}
 
       {/* Botón de enviar  */}
-      <TouchableOpacity
-        style={[styles.button, isLoading && styles.buttonDisabled]}
+      <Button
+        style={[
+          styles.button,
+          isLoading && styles.buttonDisabled,
+          { elevation: 0 },
+        ]}
         onPress={handleLogin}
         disabled={isLoading}
+        shadow={false}
       >
-        <Text style={{ color: "white" }}>
-          {isLoading ? `${t("loading")}...` : t("submit")}
-        </Text>
-      </TouchableOpacity>
+        <TranslatedText
+          value={isLoading ? "loading" : "submit"}
+          style={{ color: "white" }}
+        />
+      </Button>
     </View>
   );
 }
@@ -117,22 +109,8 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 15,
   },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    width: "100%",
-    fontSize: 16,
-    fontWeight: "200",
-    padding: 10,
-    paddingHorizontal: 12,
-  },
   button: {
-    padding: 12,
-    width: "100%",
-    backgroundColor: "#e28700ff",
     alignItems: "center",
-    borderRadius: 8,
-    marginTop: 20,
   },
   buttonDisabled: {
     opacity: 0.7,

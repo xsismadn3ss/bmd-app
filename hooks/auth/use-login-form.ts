@@ -13,7 +13,7 @@ interface LoginFormState {
 
 interface Error {
   value?: string;
-  border: string;
+  border?: string;
 }
 
 interface LoginFormErrorState {
@@ -25,11 +25,10 @@ export function useLoginForm() {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const errorBorder = "#9b2c2cff";
-  const INITIAL_BORDER = colors.border;
 
   const initialErrors: LoginFormErrorState = {
-    email: { value: undefined, border: INITIAL_BORDER },
-    password: { value: undefined, border: INITIAL_BORDER },
+    email: { value: undefined, border: undefined },
+    password: { value: undefined, border: undefined },
   };
 
   const [form, setForm] = useState<LoginFormState>({
@@ -48,7 +47,7 @@ export function useLoginForm() {
 
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: { border: INITIAL_BORDER, value: undefined },
+      [name]: { border: undefined, value: undefined },
     }));
   };
 
