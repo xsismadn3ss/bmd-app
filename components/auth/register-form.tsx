@@ -1,7 +1,7 @@
 import { useTranslation } from "@/context/LanguageContext";
 import { useRegistrationForm } from "@/hooks/auth/use-registration-form";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SlideIn } from "../animation/slide-in";
 import { Input, PasswordInput } from "../forms/input";
@@ -11,14 +11,14 @@ import { Button } from "../ui/button";
 export default function RegisterForm() {
   const { colors } = useTheme();
   const t = useTranslation();
+  const [borderColor, setBorderColor] = useState(colors.border);
+
+  useEffect(() => {
+    setBorderColor(colors.border);
+  }, [colors.border]);
 
   const { form, errors, isLoading, handleChange, handleRegister } =
     useRegistrationForm();
-
-  const backgroundColor = useThemeColor(
-    { light: "#f7f7f7ff", dark: "#111111ff" },
-    "background"
-  );
 
   const renderTextInput = (
     label: string,
@@ -31,9 +31,7 @@ export default function RegisterForm() {
       <TranslatedText value={label} />
       <Input
         style={{
-          borderColor: errors[name as "name" | "email"].border,
-          color: colors.text,
-          backgroundColor,
+          borderColor: errors[name as "name" | "email"].border ?? borderColor,
         }}
         placeholder={placeholder}
         keyboardType={keyboardType}
@@ -64,7 +62,7 @@ export default function RegisterForm() {
       <View>
         {label && <TranslatedText value={label} />}
         <PasswordInput
-          style={{ borderColor: errorData?.border }}
+          style={{ borderColor: errorData?.border ?? borderColor }}
           placeholder={placeholder}
           value={(form as any)[name]}
           onChangeText={(text) => handleChange(name as any, text)}

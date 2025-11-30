@@ -1,7 +1,7 @@
 import { useTranslation } from "@/context/LanguageContext";
 import { useLoginForm } from "@/hooks/auth/use-login-form";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SlideIn } from "../animation/slide-in";
 import { Input, PasswordInput } from "../forms/input";
@@ -11,13 +11,13 @@ import { Button } from "../ui/button";
 export default function LoginForm() {
   const { colors } = useTheme();
   const t = useTranslation();
+  const [borderColor, setBorderColor] = useState(colors.border);
+
+  useEffect(() => {
+    setBorderColor(colors.border);
+  }, [colors.border]);
 
   const { form, errors, isLoading, handleChange, handleLogin } = useLoginForm();
-
-  const backgroundColor = useThemeColor(
-    { light: "#f7f7f7ff", dark: "#111111ff" },
-    "background"
-  );
 
   const renderTextInput = (
     label: string,
@@ -29,11 +29,7 @@ export default function LoginForm() {
     <View>
       <TranslatedText value={label} />
       <Input
-        style={{
-          borderColor: errors[name].border,
-          color: colors.text,
-          backgroundColor,
-        }}
+        style={{ borderColor: errors[name].border ?? borderColor }}
         placeholder={placeholder}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
@@ -60,7 +56,7 @@ export default function LoginForm() {
       <View>
         <TranslatedText value={label} />
         <PasswordInput
-          style={{ borderColor: errorData.border }}
+          style={{ borderColor: errorData.border ?? borderColor }}
           placeholder={placeholder}
           value={form[name]}
           onChangeText={(text) => handleChange(name, text)}
