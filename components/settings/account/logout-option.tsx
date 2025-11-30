@@ -6,7 +6,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "@/context/LanguageContext";
 import { useModal } from "@/hooks/use-modal";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { CardOption } from "../settings-card";
@@ -14,7 +13,6 @@ import { CardOption } from "../settings-card";
 export function LogoutOption() {
   const t = useTranslation();
   const { openModal, closeModal, isVisible } = useModal();
-  const { colors } = useTheme();
   const { logout } = useAuth();
   const router = useRouter();
   const headerHeight = 400;
