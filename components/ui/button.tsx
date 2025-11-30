@@ -9,9 +9,9 @@ type ButtonType = "primary" | "secondary";
 
 type ButtonProps = TouchableOpacityProps & {
   /** Tipo de botón, puede ser "primary" o "secondary" */
-  type?: ButtonType 
+  type?: ButtonType;
 } & {
-  /** Indica si el botón debe tener sombra */ 
+  /** Indica si el botón debe tener sombra */
   shadow?: boolean;
 };
 
@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
   button: {
     borderWidth: 1,
     borderRadius: 10,
-    padding: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   primary: {
     backgroundColor: "#e28700ff",
