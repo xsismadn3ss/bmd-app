@@ -2,16 +2,15 @@ import { useTranslation } from "@/context/LanguageContext";
 import { useLoginForm } from "@/hooks/auth/use-login-form";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SlideIn } from "../animation/slide-in";
-import { PasswordInput } from "../forms/input";
+import { Input, PasswordInput } from "../forms/input";
 import { TranslatedText } from "../translated-text";
 import { Button } from "../ui/button";
 
 export default function LoginForm() {
   const { colors } = useTheme();
   const t = useTranslation();
-  const placeholderColor = "#686868ff";
 
   const { form, errors, isLoading, handleChange, handleLogin } = useLoginForm();
 
@@ -29,17 +28,13 @@ export default function LoginForm() {
   ) => (
     <View>
       <TranslatedText value={label} />
-      <TextInput
-        style={[
-          styles.input,
-          {
-            borderColor: errors[name].border,
-            color: colors.text,
-            backgroundColor,
-          },
-        ]}
+      <Input
+        style={{
+          borderColor: errors[name].border,
+          color: colors.text,
+          backgroundColor,
+        }}
         placeholder={placeholder}
-        placeholderTextColor={placeholderColor}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
         value={form[name]}
@@ -65,7 +60,7 @@ export default function LoginForm() {
       <View>
         <TranslatedText value={label} />
         <PasswordInput
-          style={[styles.input, { borderColor: errorData.border }]}
+          style={{ borderColor: errorData.border }}
           placeholder={placeholder}
           value={form[name]}
           onChangeText={(text) => handleChange(name, text)}
@@ -117,15 +112,6 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     gap: 15,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    width: "100%",
-    fontSize: 16,
-    fontWeight: "200",
-    padding: 10,
-    paddingHorizontal: 12,
   },
   button: {
     alignItems: "center",
