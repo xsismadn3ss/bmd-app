@@ -18,12 +18,12 @@ interface RegisterFormState {
 }
 
 interface Error {
-  border: string;
+  border?: string;
   value: string | undefined;
 }
 
 interface PasswordError {
-  border: string;
+  border?: string;
   value: string[] | undefined;
 }
 
@@ -38,13 +38,12 @@ export function useRegistrationForm() {
   const { colors } = useTheme();
   const t = useTranslation();
   const errorBorder = "#9b2c2cff";
-  const INITIAL_BORDER = colors.border;
 
   const INITIAL_ERRORS: RegisterFormErrorState = {
-    name: { value: undefined, border: INITIAL_BORDER },
-    email: { value: undefined, border: INITIAL_BORDER },
-    password: { value: undefined, border: INITIAL_BORDER },
-    confirmPassword: { value: undefined, border: INITIAL_BORDER },
+    name: { value: undefined, border: undefined },
+    email: { value: undefined, border: undefined },
+    password: { value: undefined, border: undefined },
+    confirmPassword: { value: undefined, border: undefined },
   };
 
   const [form, setForm] = useState<RegisterFormState>({
@@ -66,7 +65,7 @@ export function useRegistrationForm() {
       ...prevErrors,
       [name]: {
         ...prevErrors[name as keyof RegisterFormErrorState],
-        border: INITIAL_BORDER,
+        border: undefined,
         value: undefined,
       },
     }));
@@ -88,13 +87,13 @@ export function useRegistrationForm() {
     if (!name.trim()) {
       isValid = false;
       newErrors.name = {
-        value: t('nameRequired'),
+        value: t("nameRequired"),
         border: errorBorder,
       };
     } else if (!isEmojiSafe(name.trim())) {
       isValid = false;
       newErrors.name = {
-        value: (t('nameWeirdCharacters')),
+        value: t("nameWeirdCharacters"),
         border: errorBorder,
       };
     }
@@ -102,13 +101,13 @@ export function useRegistrationForm() {
     if (!email.trim()) {
       isValid = false;
       newErrors.email = {
-        value: t('emailRequired'),
+        value: t("emailRequired"),
         border: errorBorder,
       };
     } else if (!isEmojiSafe(email.trim())) {
       isValid = false;
       newErrors.email = {
-        value: t('emailWeirdCharacters'),
+        value: t("emailWeirdCharacters"),
         border: errorBorder,
       };
     }
@@ -116,13 +115,13 @@ export function useRegistrationForm() {
     if (!password.trim()) {
       isValid = false;
       newErrors.password = {
-        value: [t('passwordRequired')],
+        value: [t("passwordRequired")],
         border: errorBorder,
       };
     } else if (!isEmojiSafe(password.trim())) {
       isValid = false;
       newErrors.password = {
-        value: [t('passwordWeirdCharacters')],
+        value: [t("passwordWeirdCharacters")],
         border: errorBorder,
       };
     }
@@ -130,13 +129,13 @@ export function useRegistrationForm() {
     if (!confirmPassword.trim()) {
       isValid = false;
       newErrors.confirmPassword = {
-        value: t('confirmPasswordRequired'),
+        value: t("confirmPasswordRequired"),
         border: errorBorder,
       };
     } else if (!isEmojiSafe(confirmPassword.trim())) {
       isValid = false;
       newErrors.confirmPassword = {
-        value: t('confirmPasswordWeirdCharacters'),
+        value: t("confirmPasswordWeirdCharacters"),
         border: errorBorder,
       };
     }
@@ -145,7 +144,7 @@ export function useRegistrationForm() {
     if (email.trim() && !validateEmailFormat(email.trim())) {
       isValid = false;
       newErrors.email = {
-        value: t('emailFormatInvalid'),
+        value: t("emailFormatInvalid"),
         border: errorBorder,
       };
     }
@@ -158,7 +157,7 @@ export function useRegistrationForm() {
     ) {
       isValid = false;
       newErrors.confirmPassword = {
-        value: t('confirmPasswordMismatch'),
+        value: t("confirmPasswordMismatch"),
         border: errorBorder,
       };
     }
@@ -171,15 +170,15 @@ export function useRegistrationForm() {
         const messages = passwordTest.failedRequirements.map((requirement) => {
           switch (requirement) {
             case "MIN_LENGTH":
-              return t('passwordMinLength');
+              return t("passwordMinLength");
             case "UPPERCASE":
-              return t('passwordUppercase');
+              return t("passwordUppercase");
             case "LOWERCASE":
-              return t('passwordLowercase');
+              return t("passwordLowercase");
             case "NUMBER":
-              return t('passwordNumber');
+              return t("passwordNumber");
             case "SPECIAL_CHAR":
-              return t('passwordSpecialChar');
+              return t("passwordSpecialChar");
             default:
               return "";
           }
@@ -217,17 +216,17 @@ export function useRegistrationForm() {
           setErrors((prev) => ({
             ...prev,
             confirmPassword: {
-              value: t('networkError'),
+              value: t("networkError"),
               border: colors.border,
             },
           }));
           return;
         }
-        if(error.status == 409){
+        if (error.status == 409) {
           setErrors((prev) => ({
             ...prev,
             email: {
-              value: t('emailAlreadyInUse'),
+              value: t("emailAlreadyInUse"),
               border: errorBorder,
             },
           }));
